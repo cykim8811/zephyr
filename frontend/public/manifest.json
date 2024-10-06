@@ -1,0 +1,16 @@
+{
+    "name": "Zephyr",
+    "short_name": "Zephyr",
+    "icons": [
+        {
+            "src": "/icon_1024x1024.png",
+            "type": "image/png",
+            "sizes": "1024x1024",
+            "purpose": "maskable"
+        }
+    ],
+    "start_url": ".",
+    "display": "standalone",
+    "theme_color": "#111111",
+    "background_color": "#ffffff"
+}
