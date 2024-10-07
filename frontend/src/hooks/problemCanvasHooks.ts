@@ -1,16 +1,28 @@
-import { p } from "framer-motion/client";
+import { PageData } from "@/types/pageData";
 import React, { useEffect, useRef } from "react";
 
 
 const dpr = window.devicePixelRatio || 1;
 
-export function useProblemCanvasHooks(canvasRef: React.RefObject<HTMLCanvasElement>, eraserDisplayRef: React.RefObject<HTMLDivElement>, penType: string) {
+export function useProblemCanvasHooks(
+    canvasRef: React.RefObject<HTMLCanvasElement>,
+    eraserDisplayRef: React.RefObject<HTMLDivElement>,
+    penType: "pen" | "eraser",
+    pageData: PageData,
+    setPageData: (pageData: PageData) => void) {
+
+    const pageDataRef = useRef(pageData);
+
     const lastPointRef = useRef<{ x: number; y: number }[]>([]);
     const penTypeRef = useRef(penType);
 
     useEffect(() => {
         penTypeRef.current = penType;
     }, [penType]);
+
+    useEffect(() => {
+        pageDataRef.current = pageData;
+    }, [pageData]);
 
     let isPen = false;
     const handlePointerDown = (e: PointerEvent) => {
@@ -51,15 +63,15 @@ export function useProblemCanvasHooks(canvasRef: React.RefObject<HTMLCanvasEleme
 
             lastPointRef.current.push({ x: e.clientX, y: e.clientY - canvas.getBoundingClientRect().top });
 
-            ctx.lineWidth = penTypeRef.current === 'pen' ? 2 * dpr : 70 * dpr;
+            ctx.lineWidth = penTypeRef.current === 'pen' ? 2 * dpr : 60 * dpr;
             ctx.lineCap = 'round';
 
             if (penTypeRef.current === 'pen') {
                 ctx.strokeStyle = 'black';
-                ctx.globalCompositeOperation = 'source-over';
+                // ctx.globalCompositeOperation = 'source-over';
             } else {
                 ctx.strokeStyle = 'white';
-                ctx.globalCompositeOperation = 'destination-out';
+                // ctx.globalCompositeOperation = 'destination-out';
             }
 
             ctx.beginPath();
@@ -75,12 +87,70 @@ export function useProblemCanvasHooks(canvasRef: React.RefObject<HTMLCanvasEleme
 
     const handlePointerUp = (e: PointerEvent) => {
         if (isPen) {
+            // Check if canvas is all white
+            const canvas = canvasRef.current;
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            let isWhite = true;
+            for (let i = 0; i < imageData.length; i += 4) {
+                if (imageData[i] !== 255 || imageData[i + 1] !== 255 || imageData[i + 2] !== 255 || imageData[i + 3] !== 255) {
+                    isWhite = false;
+                    break;
+                }
+            }
+
+            if (isWhite) {
+                setPageData({ strokes: [] });
+            } else {
+                setPageData({
+                    strokes: [
+                        ...pageDataRef.current.strokes,
+                        {
+                            type: penTypeRef.current,
+                            points: lastPointRef.current.map(p => ({ x: p.x, y: p.y }))
+                        }
+                    ]
+                });
+            }
             lastPointRef.current = [];
             e.preventDefault();
             e.stopPropagation();
 
             eraserDisplayRef.current!.style.display = 'none';
         }
+    };
+
+    function redrawCanvas() {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        pageData.strokes.forEach(stroke => {
+            ctx.lineWidth = stroke.type === 'pen' ? 2 * dpr : 60 * dpr;
+            ctx.lineCap = 'round';
+
+            if (stroke.type === 'pen') {
+                ctx.strokeStyle = 'black';
+                // ctx.globalCompositeOperation = 'source-over';
+            } else {
+                ctx.strokeStyle = 'white';
+                // ctx.globalCompositeOperation = 'destination-out';
+            }
+
+            ctx.beginPath();
+            ctx.moveTo(stroke.points[0].x * dpr, stroke.points[0].y * dpr);
+            stroke.points.slice(1).forEach(point => {
+                ctx.lineTo(point.x * dpr, point.y * dpr);
+            });
+            ctx.stroke();
+        });
     }
 
     useEffect(() => {
@@ -92,11 +162,13 @@ export function useProblemCanvasHooks(canvasRef: React.RefObject<HTMLCanvasEleme
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'high';
-
         ctx.fillStyle = 'white';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        redrawCanvas();
+
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
 
         canvas.addEventListener('pointerdown', handlePointerDown, { passive: true, capture: true });
         canvas.addEventListener('touchstart', handleTouchStart, { passive: false, capture: false });

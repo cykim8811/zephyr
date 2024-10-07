@@ -1,11 +1,14 @@
 import ProblemCanvas from '@/components/ProblemCanvas';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Eraser, Pen } from 'lucide-react';
+import { PageData } from '@/types/pageData';
+import { ArrowLeft, Eraser, Pen } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import Markdown from 'react-markdown';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
+
+import { useLocalStorage } from 'usehooks-ts'
 
 const problemText = `
 삼차함수 $f(x)$가 모든 실수 $x$에 대하여
@@ -16,8 +19,12 @@ $xf(x) - f(x) = 3x^4 - 3x$
 
 const ProblemView: React.FC = () => {
     const { id } = useParams<{ id: string }>();
-    const [ pageCount, setPageCount ] = useState(3);
+    const [pageData, setPageData] = useLocalStorage<PageData[]>(
+        `pageData-${id}`,
+        [{ strokes: [], }]
+    );
     const toggleRef = useRef<HTMLDivElement>(null);
+    const navigate = useNavigate();
     
     const [ penType, setPenType ] = useState<'pen' | 'eraser'>('pen');
 
@@ -34,7 +41,14 @@ const ProblemView: React.FC = () => {
     }, [penType]);
 
     return (
-        <ScrollArea className="w-screen h-screen bg-gray-200 overflow-y-auto">
+        <ScrollArea
+            className="w-screen h-screen bg-gray-200 overflow-y-hidden"
+        >
+            <ArrowLeft
+                size={24}
+                className="absolute left-0 top-0 z-20 m-4 mt-8 inline-block mr-2"
+                onPointerDown={() => navigate('/enter')}
+            />
             <div className="absolute w-full p-4 bg-white opacity-95 z-10 border-b border-gray-200 pointer-events-none select-none">
                 <Markdown
                     className="w-fit mx-auto py-4 text-lg"
@@ -44,8 +58,10 @@ const ProblemView: React.FC = () => {
                     {problemText}
                 </Markdown>
             </div>
-            {Array.from({ length: pageCount }).map((_, index) => (
-                <ProblemCanvas key={index} penType={penType} />
+            {Array.from({ length: pageData.length }).map((_, index) => (
+                <ProblemCanvas key={index} penType={penType} pageData={pageData[index]} setPageData={(data) => {
+                    setPageData(pageData.map((d, i) => i === index ? data : d));
+                }} />
             ))}
             <div
                 ref={toggleRef}

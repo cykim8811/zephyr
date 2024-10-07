@@ -1,14 +1,17 @@
 import { useProblemCanvasHooks } from '@/hooks/problemCanvasHooks';
+import { PageData } from '@/types/pageData';
 import React, { useRef } from 'react';
 
 interface ProblemCanvasProps {
-    penType: string;
+    penType: 'pen' | 'eraser';
+    pageData: PageData;
+    setPageData: (pageData: PageData) => void;
 }
 
-const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType }) => {
+const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType, pageData, setPageData }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const eraserDisplayRef = useRef<HTMLDivElement>(null);
-    useProblemCanvasHooks(canvasRef, eraserDisplayRef, penType);
+    useProblemCanvasHooks(canvasRef, eraserDisplayRef, penType, pageData, setPageData);
 
     return (
         <>
@@ -20,7 +23,7 @@ const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType }) => {
             {
                 <div
                     ref={eraserDisplayRef}
-                    className="w-[70px] h-[70px] rounded-full border border-gray-300 absolute transform -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none"
+                    className="w-[60px] h-[60px] rounded-full border border-gray-300 absolute transform -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none"
                 />
             }
         </>
