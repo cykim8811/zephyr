@@ -3,6 +3,7 @@ import ProblemCanvas from '@/components/ProblemCanvas';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { PageData } from '@/types/pageData';
 import { addToServer, getFromServer, saveToServer } from '@/utils/sync';
+import axios from 'axios';
 import { ArrowLeft } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import Markdown from 'react-markdown';
@@ -11,18 +12,22 @@ import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
 
 
-const problemText = `
-삼차함수 $f(x)$가 모든 실수 $x$에 대하여
-
-$xf(x) - f(x) = 3x^4 - 3x$
-를 만족시킬 때, $\\int_{-2}^{2} f(x) \\, dx$의 값은?
-`;
-
 const ProblemView: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [pageData, setPageData] = useState<PageData[]>([{ strokes: [], }]);
+    const [problemText, setProblemText] = useState<string>('');
 
-    useEffect(() => { if (id === undefined) return; getFromServer(id, setPageData); }, []);
+    useEffect(() => {
+        if (id === undefined) return;
+        axios.get(`https://zephyr.cykim.kr/api/problem?id=${id}`)
+            .then((response) => {
+                setProblemText(response.data.text);
+            })
+            .catch((e) => {
+                alert(e);
+            });
+        getFromServer(id, setPageData);
+    }, [id]);
 
     const navigate = useNavigate();
     
