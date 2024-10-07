@@ -3,5 +3,5 @@ from . import views
 
 urlpatterns = [
     # Define your URL patterns here
-    # Example: path('example/', views.example_view, name='example'),
+    path('ai/', views.request_ai, name='request_ai'),
 ]

@@ -31,7 +31,8 @@ SECRET_KEY = 'django-insecure-i=^!5_dkat6&a^tbj5jxmw+7xkr%+-t1h%+_wf=5n7%u$tqsof
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'zephyr.cykim.kr'
+    'zephyr.cykim.kr',
+    '192.168.75.194'
 ]
 
 if DEBUG:
@@ -39,9 +40,11 @@ if DEBUG:
 
 CORS_ALLOWED_ORIGINS = [
     'https://zephyr.cykim.kr',
+    'https://192.168.75.194'
 ]
 CSRF_TRUSTED_ORIGINS = [
     'https://zephyr.cykim.kr',
+    'https://192.168.75.194'
 ]
 
 

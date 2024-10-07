@@ -128,7 +128,6 @@ export function useProblemCanvasHooks(
 
         ctx.fillStyle = 'white';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-
         pageData.strokes.forEach(stroke => {
             ctx.lineWidth = stroke.type === 'pen' ? 2 * dpr : 60 * dpr;
             ctx.lineCap = 'round';

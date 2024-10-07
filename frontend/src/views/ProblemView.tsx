@@ -1,7 +1,10 @@
+import AIButton from '@/components/AIButton';
 import PenToggle from '@/components/PenToggle';
 import ProblemCanvas from '@/components/ProblemCanvas';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Hint } from '@/types/hint';
 import { PageData } from '@/types/pageData';
+import { getCsrfToken } from '@/utils/csrf';
 import { addToServer, getFromServer, saveToServer } from '@/utils/sync';
 import axios from 'axios';
 import { ArrowLeft } from 'lucide-react';
@@ -17,9 +20,11 @@ const ProblemView: React.FC = () => {
     const [pageData, setPageData] = useState<PageData[]>([{ strokes: [], }]);
     const [problemText, setProblemText] = useState<string>('');
 
+    const [hint, setHint] = useState<Hint | null>(null);
+
     useEffect(() => {
         if (id === undefined) return;
-        axios.get(`https://zephyr.cykim.kr/api/problem?id=${id}`)
+        axios.get(`${window.location.origin}/api/problem?id=${id}`)
             .then((response) => {
                 setProblemText(response.data.text);
             })
@@ -36,6 +41,26 @@ const ProblemView: React.FC = () => {
     const handleToggle = (e: TouchEvent) => {
         setPenType(penType === 'pen' ? 'eraser' : 'pen');
         e.preventDefault();
+    }
+
+    const handleAIClick = async (e: TouchEvent) => {
+        await axios.post(
+            window.location.origin + '/api/ai/',
+            {
+                problem_id: id,
+                texts: JSON.stringify(pageData),
+            },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken(),
+                }
+            }
+        ).then((response) => {
+            setHint(response.data);
+        }).catch((e) => {
+            alert(e);
+        });
     }
 
     return (
@@ -57,7 +82,7 @@ const ProblemView: React.FC = () => {
                 </Markdown>
             </div>
             {Array.from({ length: pageData.length }).map((_, index) => (
-                <ProblemCanvas key={index} penType={penType} pageData={pageData[index]}
+                <ProblemCanvas key={index} penType={penType} pageData={pageData[index]} hint={hint?.page_id === index ? hint : null}
                     setPageData={(data) => {
                         setPageData((pageData) => {
                             pageData[index] = data;
@@ -87,7 +112,8 @@ const ProblemView: React.FC = () => {
                     }}
                 />
             ))}
-            <PenToggle penType={penType} onClick={handleToggle} />
+            <PenToggle className="absolute right-0 top-0 z-20" penType={penType} onClick={handleToggle} />
+            <AIButton className="absolute right-0 top-20 z-20" onClick={handleAIClick} />
         </ScrollArea>
     );
 };
