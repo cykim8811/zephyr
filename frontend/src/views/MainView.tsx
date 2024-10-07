@@ -9,8 +9,14 @@ import "katex/dist/katex.min.css";
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 
+import { useNavigate } from 'react-router-dom';
+
 const MainView: React.FC = () => {
     const [tutortext, setTutortext] = useState("tuter.");
+    const [nextPageTransition, setNextPageTransition] = useState(false);
+
+    const navigate = useNavigate();
+
     useEffect(() => {
         setTimeout(() => {setTutortext("tuter");}, 5000);
         setTimeout(() => {setTutortext("tute");}, 5100);
@@ -20,8 +26,13 @@ const MainView: React.FC = () => {
         setTimeout(() => {setTutortext("tutor.");}, 5500);
     }, []);
     return (
-        <div className="flex justify-center items-center h-screen text-5xl md:text-7xl lg:text-8xl flex-col" style={{ fontFamily: "Noto Serif"}}>
-            <motion.span 
+        <motion.div
+            className="flex justify-center items-center h-screen text-5xl md:text-7xl lg:text-8xl flex-col" style={{ fontFamily: "Noto Serif"}}
+            initial={{ opacity: 1, y: 0 }}
+            animate={{ opacity: nextPageTransition ? 0 : 1, y: nextPageTransition ? 20 : 0 }}
+            transition={{ duration: 0.5, ease: "easeIn" }}
+        >
+            <motion.span
                 className="flex flex-row items-center italic"
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -107,12 +118,20 @@ const MainView: React.FC = () => {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.8, delay: 1, ease: "easeOut" }}
             >
-                <Button className="mb-24">
+                <Button
+                    className="mb-24"
+                    onClick={() => {
+                        setNextPageTransition(true)
+                        setTimeout(() => {
+                            navigate("/enter");
+                        }, 500);
+                    }}
+                >
                     Get Started
                     <ArrowRight size={16} />
                 </Button>
             </motion.div>
-        </div>
+        </motion.div>
     );
 };
 
