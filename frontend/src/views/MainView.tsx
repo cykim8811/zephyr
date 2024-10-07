@@ -123,7 +123,7 @@ const MainView: React.FC = () => {
                     onClick={() => {
                         setNextPageTransition(true)
                         setTimeout(() => {
-                            navigate("/enter");
+                            navigate("/login");
                         }, 500);
                     }}
                 >
