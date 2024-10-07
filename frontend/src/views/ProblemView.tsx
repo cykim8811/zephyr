@@ -52,32 +52,34 @@ const ProblemView: React.FC = () => {
                 </Markdown>
             </div>
             {Array.from({ length: pageData.length }).map((_, index) => (
-                <ProblemCanvas key={index} penType={penType} pageData={pageData[index]} setPageData={(data) => {
-                    const newPageData = pageData.map((d, i) => i === index ? data : d);
-                    if (newPageData.length >= 2
-                        && newPageData[newPageData.length - 1].strokes.length === 0
-                        && newPageData[newPageData.length - 2].strokes.length === 0) {
-                        newPageData.pop();
-                    }
-                    if (id === undefined) return;
-                    saveToServer(newPageData, id);
-                    setPageData(newPageData);
-                }}
-                addPageData={(stroke) => {
-                    setPageData((pageData) => {
-                        if (id === undefined) return pageData;
+                <ProblemCanvas key={index} penType={penType} pageData={pageData[index]}
+                    setPageData={(data) => {
+                        setPageData((pageData) => {
+                            pageData[index] = data;
+                            let lastFilledIndex = pageData.length - 1;
+                            while (lastFilledIndex >= 0 && pageData[lastFilledIndex].strokes.length === 0) lastFilledIndex--;
+                            lastFilledIndex += 2;
+                            const newPageData = pageData.slice(0, lastFilledIndex);
+                            if (id === undefined) return newPageData;
+                            saveToServer(newPageData, id);
+                            return newPageData;
+                        });
+                    }}
+                    addPageData={(stroke) => {
+                        setPageData((pageData) => {
+                            if (id === undefined) return pageData;
 
-                        if (pageData[pageData.length - 1].strokes.length !== 0) {
-                            pageData[index].strokes.push(stroke);
-                            pageData.push({ strokes: [] });
-                            saveToServer(pageData, id);
-                            return pageData;
-                        } else {
-                            addToServer(stroke, index, id);
-                            return pageData.map((d, i) => i === index ? { strokes: [...d.strokes, stroke] } : d)
-                        }
-                    });
-                }}
+                            if (pageData[pageData.length - 1].strokes.length !== 0) {
+                                pageData[index].strokes.push(stroke);
+                                pageData.push({ strokes: [] });
+                                saveToServer(pageData, id);
+                                return pageData;
+                            } else {
+                                addToServer(stroke, index, id);
+                                return pageData.map((d, i) => i === index ? { strokes: [...d.strokes, stroke] } : d)
+                            }
+                        });
+                    }}
                 />
             ))}
             <PenToggle penType={penType} onClick={handleToggle} />
