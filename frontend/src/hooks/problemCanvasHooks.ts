@@ -1,14 +1,17 @@
 import React, { useEffect, useRef } from "react";
 
+
+const dpr = window.devicePixelRatio || 1;
+
 export function useProblemCanvasHooks(canvasRef: React.RefObject<HTMLCanvasElement>) {
-    const lastPointRef = useRef<{ x: number; y: number } | null>(null);
+    const lastPointRef = useRef<{ x: number; y: number }[]>([]);
 
     let isPen = false;
     const handlePointerDown = (e: PointerEvent) => {
         e.preventDefault();
         isPen = e.pointerType === 'pen';
         if (isPen) {
-            lastPointRef.current = { x: e.clientX, y: e.clientY - canvasRef.current!.getBoundingClientRect().top };
+            lastPointRef.current = [{ x: e.clientX, y: e.clientY - canvasRef.current!.getBoundingClientRect().top }];
         } else {
             return;
         }
@@ -28,14 +31,19 @@ export function useProblemCanvasHooks(canvasRef: React.RefObject<HTMLCanvasEleme
             const ctx = canvas.getContext('2d');
             if (!ctx) return;
 
-            if (lastPointRef.current !== null) {
-                ctx.beginPath();
-                ctx.moveTo(lastPointRef.current.x, lastPointRef.current.y);
-                ctx.lineTo(e.clientX, e.clientY - canvas.getBoundingClientRect().top);
-                ctx.stroke();
-            }
+            const dist = Math.hypot(e.clientX - lastPointRef.current[lastPointRef.current.length - 1].x, e.clientY - canvas.getBoundingClientRect().top - lastPointRef.current[lastPointRef.current.length - 1].y);
+            if (dist < 2) return;
 
-            lastPointRef.current = { x: e.clientX, y: e.clientY - canvas.getBoundingClientRect().top };
+            lastPointRef.current.push({ x: e.clientX, y: e.clientY - canvas.getBoundingClientRect().top });
+
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = 'black';
+            ctx.beginPath();
+            ctx.moveTo(lastPointRef.current[lastPointRef.current.length - 2].x * dpr, lastPointRef.current[lastPointRef.current.length - 2].y * dpr);
+            ctx.lineTo(lastPointRef.current[lastPointRef.current.length - 1].x * dpr, lastPointRef.current[lastPointRef.current.length - 1].y * dpr);
+            ctx.stroke();
+
 
             e.preventDefault();
             e.stopPropagation();
@@ -44,7 +52,7 @@ export function useProblemCanvasHooks(canvasRef: React.RefObject<HTMLCanvasEleme
 
     const handlePointerUp = (e: PointerEvent) => {
         if (isPen) {
-            lastPointRef.current = null;
+            lastPointRef.current = [];
             e.preventDefault();
             e.stopPropagation();
         }
@@ -53,11 +61,14 @@ export function useProblemCanvasHooks(canvasRef: React.RefObject<HTMLCanvasEleme
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
-        canvas.width = canvas.clientWidth;
-        canvas.height = canvas.clientHeight;
+        canvas.width = canvas.clientWidth * dpr;
+        canvas.height = canvas.clientHeight * dpr;
 
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
+
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
 
         ctx.fillStyle = 'white';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
