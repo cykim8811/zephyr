@@ -1,6 +1,8 @@
 import ProblemCanvas from '@/components/ProblemCanvas';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { PageData } from '@/types/pageData';
+import { getCsrfToken } from '@/utils/csrf';
+import axios from 'axios';
 import { ArrowLeft, Eraser, Pen } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import Markdown from 'react-markdown';
@@ -8,7 +10,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
 
-import { useLocalStorage } from 'usehooks-ts'
 
 const problemText = `
 삼차함수 $f(x)$가 모든 실수 $x$에 대하여
@@ -19,10 +20,18 @@ $xf(x) - f(x) = 3x^4 - 3x$
 
 const ProblemView: React.FC = () => {
     const { id } = useParams<{ id: string }>();
-    const [pageData, setPageData] = useLocalStorage<PageData[]>(
-        `pageData-${id}`,
-        [{ strokes: [], }]
-    );
+    const [pageData, setPageData] = useState<PageData[]>([{ strokes: [], }]);
+
+    useEffect(() => {
+        axios.get(`https://zephyr.cykim.kr/accounts/solution/get?problem_id=${id}`)
+            .then((response) => {
+                setPageData(JSON.parse(response.data.texts));
+            })
+            .catch((e) => {
+                alert(e);
+            });
+    }, []);
+
     const toggleRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
     
@@ -60,8 +69,40 @@ const ProblemView: React.FC = () => {
             </div>
             {Array.from({ length: pageData.length }).map((_, index) => (
                 <ProblemCanvas key={index} penType={penType} pageData={pageData[index]} setPageData={(data) => {
-                    setPageData(pageData.map((d, i) => i === index ? data : d));
-                }} />
+                    const newPageData = pageData.map((d, i) => i === index ? data : d);
+                    axios.post('https://zephyr.cykim.kr/accounts/solution/', {
+                        problem_id: id,
+                        texts: JSON.stringify(newPageData),
+                    },
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCsrfToken(),
+                        }
+                    }).catch((e) => {
+                        alert(e);
+                    });
+                    setPageData(newPageData);
+                }}
+                addPageData={(stroke) => {
+                    setPageData((pageData) => {
+                        axios.post('https://zephyr.cykim.kr/accounts/solution/', {
+                            problem_id: id,
+                            page_id: index,
+                            stroke: JSON.stringify(stroke),
+                        },
+                        {
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCsrfToken(),
+                            }
+                        }).catch((e) => {
+                            alert(e);
+                        });
+                        return pageData.map((d, i) => i === index ? { strokes: [...d.strokes, stroke] } : d)
+                    });
+                }}
+                />
             ))}
             <div
                 ref={toggleRef}

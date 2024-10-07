@@ -1,4 +1,4 @@
-import { PageData } from "@/types/pageData";
+import { PageData, Stroke } from "@/types/pageData";
 import React, { useEffect, useRef } from "react";
 
 
@@ -9,7 +9,8 @@ export function useProblemCanvasHooks(
     eraserDisplayRef: React.RefObject<HTMLDivElement>,
     penType: "pen" | "eraser",
     pageData: PageData,
-    setPageData: (pageData: PageData) => void) {
+    setPageData: (pageData: PageData) => void,
+    addPageData: (stroke: Stroke) => void) {
 
     const pageDataRef = useRef(pageData);
 
@@ -22,6 +23,7 @@ export function useProblemCanvasHooks(
 
     useEffect(() => {
         pageDataRef.current = pageData;
+        redrawCanvas();
     }, [pageData]);
 
     let isPen = false;
@@ -105,14 +107,9 @@ export function useProblemCanvasHooks(
             if (isWhite) {
                 setPageData({ strokes: [] });
             } else {
-                setPageData({
-                    strokes: [
-                        ...pageDataRef.current.strokes,
-                        {
-                            type: penTypeRef.current,
-                            points: lastPointRef.current.map(p => ({ x: p.x, y: p.y }))
-                        }
-                    ]
+                addPageData({
+                    type: penTypeRef.current,
+                    points: lastPointRef.current.map(p => ({ x: p.x, y: p.y }))
                 });
             }
             lastPointRef.current = [];

@@ -37,6 +37,13 @@ ALLOWED_HOSTS = [
 if DEBUG:
     ALLOWED_HOSTS.append('192.168.75.194')
 
+CORS_ALLOWED_ORIGINS = [
+    'https://zephyr.cykim.kr',
+]
+CSRF_TRUSTED_ORIGINS = [
+    'https://zephyr.cykim.kr',
+]
+
 
 # Application definition
 
@@ -47,11 +54,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'ai',
+    'rest_framework',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'ai',
+    'user',
+    'problem',
 ]
 
 MIDDLEWARE = [
