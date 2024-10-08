@@ -1,23 +1,15 @@
-from django.shortcuts import render
+
 from django.http import HttpResponse, JsonResponse
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 
-import json
-import os
-
 from problem.models import Problem
-from user.models import Solution
 
-from PIL import ImageFont
+from PIL import Image
 
-import base64
-from io import BytesIO
-from PIL import Image, ImageDraw
-from typing import List, Dict, Union
 
-from .prompts import step_parser
+from .prompts import step_parser, advisor
 
 
 
@@ -40,6 +32,15 @@ def request_ai(request):
 
     steps = step_parser.parse(problem, images)
 
-    print(steps)
+    advisor.parse(problem, images, steps[1])
 
-    return HttpResponse("OK", status=200)
+    return JsonResponse({
+        "page_id": steps[0]["page"],
+        "left": steps[0]["left"],
+        "top": steps[0]["top"],
+        "right": steps[0]["right"],
+        "bottom": steps[0]["bottom"],
+        "text": steps[0]["equation"]
+    })
+
+

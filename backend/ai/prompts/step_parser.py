@@ -31,7 +31,8 @@ system_prompt1 = """
 - 개별 풀이 단계, 해당하는 스킬, 위치, 텍스트를 기록하여라.
 - 모든 단계를 분석한 후, 이를 XML 형식으로 변환하여라.
 
-# 예시
+# 예시 출력
+
 ### 1단계
 과정: 학생은 수열의 8번째 항과 9번째 항으로 공차를 구하고자 함.
 스킬: Skill A
@@ -50,7 +51,7 @@ system_prompt1 = """
 위치: A11, A12, B11, B12, C11, C12, D11, D12, E11, E12
 식: a_n = -20 + 4 * (n - 1)
 
-### 변환
+### 변환 단계
 <output>
     <step>
         <process>학생은 수열의 8번째 항과 9번째 항으로 공차를 구하고자 함.</process>
@@ -82,13 +83,14 @@ system_prompt1 = """
 </output>
 """
 
+grid_x_num = 10
+grid_y_num = 15
+
 def preprocess(image: Image, page_id: int) -> Image:
     overlay = Image.new("RGBA", image.size, (0, 0, 0, 0))
     draw = ImageDraw.Draw(overlay)
 
     width, height = image.size
-    grid_x_num = 10
-    grid_y_num = 15
 
     for i in range(grid_x_num + 1):
         x = (width - 2) * i // grid_x_num
@@ -156,10 +158,10 @@ def parse(problem, images):
                 ],
             }
         ],
-        max_tokens=1000,
+        max_tokens=2000,
     )
     print(response.choices[0].message.content)
-    print(f"{(response.usage.prompt_tokens * 2.5 / 1000000 + response.usage.completion_tokens * 10 / 1000000) * 1348}원")
+    print(f"{len(res)} images - {(response.usage.prompt_tokens * 2.5 / 1000000 + response.usage.completion_tokens * 10 / 1000000) * 1348}원")
 
     # parse response xml
     data = response.choices[0].message.content
@@ -172,11 +174,12 @@ def parse(problem, images):
     for step in root:
         steps.append({
             "process": step.find("process").text,
+            "page": (int(step.find("top").text) - 1) // grid_y_num,
             "skill": step.find("skill").text,
-            "left": step.find("left").text,
-            "top": step.find("top").text,
-            "right": step.find("right").text,
-            "bottom": step.find("bottom").text,
+            "left": (ord(step.find("left").text) - ord("A")) / grid_x_num,
+            "top": (int(step.find("top").text) - 1) % grid_y_num / grid_y_num,
+            "right": (ord(step.find("right").text) - ord("A") + 1) / grid_x_num,
+            "bottom": ((int(step.find("bottom").text) - 1) % grid_y_num + 1) / grid_y_num,
             "equation": step.find("equation").text,
         })
 
