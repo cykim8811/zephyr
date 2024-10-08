@@ -96,36 +96,7 @@ system_prompt = """
 {problem}
 
 ## 스킬 목록
-
-\\text{[Skill A]} \\\\
-x = \\ln(t^3 + 1) \\text{를 }t\\text{에 대해 미분하면} \\\\
-\\frac{dx}{dt}=\\frac{3t^2}{t^3+1}
-
-
-\\text{[Skill B]} \\\\
-y = \\sin(\\pi t) \\text{를 }t\\text{에 대해 미분하면} \\\\
-\\frac{dy}{dt}=\\pi \\cos{\\pi t}
-
-
-\\text{[Skill C]} \\\\
-\\frac{dx}{dt}=\\frac{3t^2}{t^3+1} \\text{에 }t=1\\text{을 대입하면} \\\\
-\\frac{dx}{dt}=\\frac{3}{2}
-
-\\text{[Skill D]} \\\\
-\\frac{dy}{dt}=\\pi \\cos{\\pi t} \\text{에 }t=1\\text{을 대입하면} \\\\
-\\frac{dy}{dt}=-\\pi
-
-\\text{[Skill E]} \\\\
-\\frac{dx}{dt}=\\frac{3t^2}{t^3+1} \\text{와 } \\frac{dy}{dt}=\\pi \\cos{\\pi t} \\text{일 때, } \\\\
-\\frac{dy}{dx}=\\frac{(t^3+1)\\times (\\pi \\cos{\\pi t})}{3t^2} \\\\
-
-\\text{[Skill F]} \\\\
-\\frac{dy}{dx}=\\frac{(t^3+1)\\times (\\pi \\cos{\\pi t})}{3t^2} \\text{에 }t=1\\text{을 대입하면} \\\\
-\\frac{dy}{dx}=-\\frac{2\\pi}{3}
-
-\\text{[Skill G]} \\\\
-t = 1\\text{일 때} \\frac{dx}{dt}=\\frac{3}{2}, \\frac{dy}{dt}=-\\pi\\text{이므로} \\\\
-t = 1\\text{일 때} \\frac{dy}{dx}=-\\frac{2\\pi}{3} \\text{이다.} \\\\
+{skills}
 
 ## 정답
 
@@ -217,7 +188,7 @@ def request_ai(request):
         messages=[
             {
                 "role": "system",
-                "content": system_prompt.replace("{problem}", problem.text),
+                "content": system_prompt.replace("{problem}", problem.text).replace("{skills}", problem.prompt),
             },
             {
                 "role": "user",
@@ -226,7 +197,7 @@ def request_ai(request):
                         "type": "image_url",
                         "image_url": {
                             "url": f"data:image/jpeg;base64,{res}",
-                            "detail": "low",
+                            "detail": "high",
                         },
                     },
                 ],
