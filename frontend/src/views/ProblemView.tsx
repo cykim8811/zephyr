@@ -70,7 +70,7 @@ const ProblemView: React.FC = () => {
             <ArrowLeft
                 size={24}
                 className="absolute left-0 top-0 z-20 m-4 mt-8 inline-block mr-2"
-                onPointerDown={() => navigate('/enter')}
+                onPointerDown={() => navigate('/problem')}
             />
             <div className="absolute w-full p-4 bg-white opacity-95 z-10 border-b border-gray-200 pointer-events-none select-none">
                 <Markdown
@@ -98,7 +98,6 @@ const ProblemView: React.FC = () => {
                     addPageData={(stroke) => {
                         setPageData((pageData) => {
                             if (id === undefined) return pageData;
-
                             if (pageData[pageData.length - 1].strokes.length !== 0) {
                                 pageData[index].strokes.push(stroke);
                                 pageData.push({ strokes: [] });
