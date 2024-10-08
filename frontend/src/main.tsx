@@ -2,6 +2,8 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 
+import 'katex/dist/katex.css';
+
 import {
   createBrowserRouter,
   RouterProvider,
@@ -11,6 +13,7 @@ import MainView from './views/MainView';
 import ProblemListView from './views/ProblemListView';
 import ProblemView from './views/ProblemView';
 import LoginView from './views/LoginView';
+
 
 
 const router = createBrowserRouter([

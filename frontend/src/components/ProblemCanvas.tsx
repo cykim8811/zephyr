@@ -7,19 +7,28 @@ import Markdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 
+import '../styles/kalam_katex.css';
+
 interface ProblemCanvasProps {
     penType: 'pen' | 'eraser';
     pageData: PageData;
     setPageData: (pageData: PageData) => void;
     addPageData: (stroke: Stroke) => void;
+    setCanvas: (canvas: HTMLCanvasElement) => void;
     hint: Hint | null;
 }
 
-const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType, pageData, setPageData, addPageData, hint }) => {
+const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType, pageData, setPageData, addPageData, setCanvas, hint }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const overlayCanvasRef = useRef<HTMLCanvasElement>(null);
     const eraserDisplayRef = useRef<HTMLDivElement>(null);
     useProblemCanvasHooks(canvasRef, eraserDisplayRef, penType, pageData, setPageData, addPageData, overlayCanvasRef);
+
+    useEffect(() => {
+        if (canvasRef.current) {
+            setCanvas(canvasRef.current);
+        }
+    }, [canvasRef.current]);
 
     const [hintText, setHintText] = useState<string>('');
 
@@ -27,10 +36,10 @@ const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType, pageData, setPag
         setHintText('');
         (async () => {
             if (hint === null) return;
-            while (hintText.length < hint.text.length) {
+            while (true) {
                 let done = false;
                 setHintText((prev) => {
-                    if (prev.length === hint.text.length) {
+                    if (prev.length >= hint.text.length) {
                         done = true;
                     }
                     return hint.text.slice(0, prev.length + 1);

@@ -3,6 +3,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Math&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -90,4 +91,8 @@ html, body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+p .katex {
+  font-size: 0.8em !important;
 }

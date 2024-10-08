@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 
-import "katex/dist/katex.min.css";
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 

@@ -105,7 +105,7 @@ export function useProblemCanvasHooks(
             if (penTypeRef.current === 'eraser') {
                 eraserDisplayRef.current!.style.display = 'block';
                 eraserDisplayRef.current!.style.left = e.clientX + 'px';
-                eraserDisplayRef.current!.style.top = e.clientY + 'px';
+                eraserDisplayRef.current!.style.top = e.clientY - canvasRef.current!.getBoundingClientRect().top + 'px';
             }
         } else {
             return;
@@ -127,7 +127,7 @@ export function useProblemCanvasHooks(
 
             if (penTypeRef.current === 'eraser') {
                 eraserDisplayRef.current!.style.left = e.clientX + 'px';
-                eraserDisplayRef.current!.style.top = e.clientY + 'px';
+                eraserDisplayRef.current!.style.top = e.clientY - canvas.getBoundingClientRect().top + 'px';
             }
 
             if (!overlayCtxRef.current) return;

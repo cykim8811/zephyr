@@ -18,74 +18,41 @@ from io import BytesIO
 from PIL import Image, ImageDraw
 from typing import List, Dict, Union
 
-scale = 2
-xcnt = 10
-ycnt = 15
-def build_screen(page_data: Dict[str, List[Dict[str, Union[str, List[Dict[int, int]]]]]]) -> str:
-    # 이미지 생성
-    img = Image.new('RGBA', (round(834 * scale), round(1179 * scale)), (255, 255, 255, 255))
-    draw = ImageDraw.Draw(img)
 
-    # 스트로크 그리기
-    for stroke in page_data['strokes']:
-        if stroke['type'] == 'pen':
-            color = 'black'
-            width = round(2 * scale)
-        elif stroke['type'] == 'eraser':
-            color = 'white'
-            width = round(60 * scale)
-        else:
-            continue
+def preprocess(image: Image, page_id: int) -> Image:
+    overlay = Image.new("RGBA", image.size, (0, 0, 0, 0))
+    draw = ImageDraw.Draw(overlay)
 
-        points = stroke['points']
-        if len(points) > 1:
-            for i in range(len(points) - 1):
-                start = (round(points[i]['x'] * scale), round(points[i]['y'] * scale))
-                end = (round(points[i+1]['x'] * scale), round(points[i+1]['y'] * scale))
-                draw.line([start, end], fill=color, width=width)
-    
-    overlay = Image.new('RGBA', (round(834 * scale), round(1179 * scale)), (0, 0, 0, 0))
-    overlay_draw = ImageDraw.Draw(overlay)
-    for i in range(xcnt+1):
-        overlay_draw.line([(833 * scale / xcnt * i, 0), (833 * scale / xcnt * i, 1179 * scale)], fill='blue', width=round(1 * scale))
-    for i in range(ycnt+1):
-        overlay_draw.line([(0, 1179 * scale / ycnt * i), (833 * scale, 1179 * scale / ycnt * i)], fill='blue', width=round(1 * scale))
+    width, height = image.size
+    grid_x_num = 10
+    grid_y_num = 15
 
-    for ix in range(xcnt):
-        for iy in range(ycnt):
-            iya = chr(ord('A') + iy)
-            overlay_draw.text(
-                (833 * scale / xcnt * ix + xcnt, 1179 * scale / ycnt * iy + 5),
-                f"{iya}{ix}",
-                fill='#0000FF33',
-                font=ImageFont.load_default().font_variant(size=round(52 * scale))
-            )
-    
-    img = Image.alpha_composite(img, overlay)
+    for i in range(grid_x_num + 1):
+        x = (width - 2) * i // grid_x_num
+        draw.line([(x, 0), (x, height)], fill=(0, 0, 255, 255), width=2)
 
-    # 이미지를 Base64로 인코딩
-    buffered = BytesIO()
-    img.save(buffered, format="PNG")
-    img_str = base64.b64encode(buffered.getvalue()).decode()
+    for i in range(grid_y_num + 1):
+        y = (height - 2) * i // grid_y_num
+        draw.line([(0, y), (width, y)], fill=(0, 0, 255, 255), width=2)
 
-    return img_str
+    for ix in range(grid_x_num):
+        for iy in range(grid_y_num):
+            text = f"{chr(ord('A') + ix)}{iy + 1 + grid_y_num * page_id}"
+            font = ImageFont.load_default().font_variant(size=64)
+            _, _, text_width, text_height = font.getbbox(text)
+            x = (width - 2) * (ix + 0.5) // grid_x_num - text_width // 2
+            y = (height - 2) * (iy + 0.5) // grid_y_num - text_height // 2
+            draw.text((x, y), text, fill=(0, 0, 255, 96), font=font)
 
+    image = Image.alpha_composite(image.convert("RGBA"), overlay)
+    return image
 
-def save_base64_to_file(base64_string: str, file_path: str) -> None:
-    """
-    Base64로 인코딩된 이미지 문자열을 파일로 저장합니다.
-    
-    :param base64_string: Base64로 인코딩된 이미지 문자열
-    :param file_path: 저장할 파일 경로 (예: 'image.png')
-    """
-    # Base64 문자열을 디코드하여 바이너리 데이터로 변환
-    image_data = base64.b64decode(base64_string)
-    
-    # 바이너리 데이터를 파일로 저장
-    with open(file_path, 'wb') as file:
-        file.write(image_data)
-    
-    print(f"이미지가 {file_path}에 저장되었습니다.")
+def save_merged_image(images: List[Image], filename: str):
+    width, height = images[0].size
+    merged = Image.new("RGB", (width, len(images) * height))
+    for i, image in enumerate(images):
+        merged.paste(image, (0, i * height))
+    merged.save(filename)
 
 system_prompt = """
 
@@ -118,15 +85,15 @@ system_prompt = """
 - 오답이 발생한 위치를 대표하는 박스를 하나 찾아내시오.
     ex) C3
     ex) F3
-    ex) J7
+    ex) H7
 - 오답이 발생한 부분과 겹치는 파란색 사각형을 모두 찾아내어 나열하시오.
-    ex) C2, D2, C3, D3, C4, D4
+    ex) C2, D2, E2, C3, D3, E3
     ex) F3
-    ex) J5, J6, J7, J8, J9, J10
+    ex) F5, G5, H5, I5, J5
 - 이를 토대로 left, right, top, bottom을 추출하시오.
-    ex) left: 2, right: 4, top: C, bottom: D
-    ex) left: 3, right: 3, top: F, bottom: F
-    ex) left: 5, right: 10, top: J, bottom: J
+    ex) left: C, right: E, top: 2, bottom: 3
+    ex) left: F, right: F, top: 3, bottom: 3
+    ex) left: F, right: J, top: 5, bottom: 5
 
 ### 3. 출력
 - 위의 내용을 바탕으로 XML 형식으로 출력하시오. LaTeX 수식은 필히 $로 감싸서 작성하시오. 그렇지 않으면 오답처리됩니다.
@@ -152,10 +119,10 @@ system_prompt = """
 "공차와 8번째 항이 있을 때, $a_1$을 구하려면 어떻게 해야 할까요?"
 
 <output>
-    <left>3</left>
-    <right>5</right>
-    <top>G</top>
-    <bottom>J</bottom>
+    <left>C</left>
+    <right>E</right>
+    <top>2</top>
+    <bottom>3</bottom>
     <advice>공차와 8번째 항이 있을 때, $a_1$을 구하려면 어떻게 해야 할까요?</advice>
 </output>
 """
@@ -166,22 +133,35 @@ client = OpenAI()
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def request_ai(request):
-    problem_id = request.data.get('problem_id')
+    problem_id = request.POST.get('problem_id')
 
     if not problem_id:
-        return HttpResponse("Problem ID is required", status=400)
+        return HttpResponse("problem_id is required", status=400)
     
     problem = Problem.objects.get(id=problem_id)
-    user = request.user
-
-    solution = Solution.objects.filter(user=user, problem=problem).first()
-
-    if not solution:
-        return HttpResponse("Solution not found", status=404)
     
-    res = build_screen(json.loads(solution.texts)[0])
+    # get images from request
+    images = request.FILES.getlist('images')
+    if not images:
+        return HttpResponse("Images are required", status=400)
 
-    save_base64_to_file(res, 'image.png')
+    # convert to pil
+    images = [Image.open(image) for image in images]
+
+    # add grid
+    images = [preprocess(image, i) for i, image in enumerate(images)]
+
+    save_merged_image(images, "image.png")
+
+    # convert to base64
+    res = []
+    for image in images:
+        buffered = BytesIO()
+        if image.mode == "RGBA":
+            image = image.convert("RGB")
+        image.save(buffered, format="JPEG")
+        img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
+        res.append(img_str)
 
     response = client.chat.completions.create(
         model="gpt-4o",
@@ -196,10 +176,11 @@ def request_ai(request):
                     {
                         "type": "image_url",
                         "image_url": {
-                            "url": f"data:image/jpeg;base64,{res}",
+                            "url": f"data:image/jpeg;base64,{res[i]}",
                             "detail": "high",
                         },
-                    },
+                    }
+                    for i in range(len(res))
                 ],
             }
         ],
@@ -220,22 +201,14 @@ def request_ai(request):
     bottom = root.find("bottom").text
     advice = root.find("advice").text
 
-    left = int(left)
-    right = int(right) + 1
-    top = ord(top) - ord('A')
-    bottom = ord(bottom) - ord('A') + 1
+    page_id = (int(top) - 1) // 15
+    left = ord(left) - ord('A')
+    right = ord(right) - ord('A') + 1
+    top = (int(top) - 1) % 15
+    bottom = (int(bottom) - 1) % 15 + 1
 
-    print({
-        "page_id": 0,
-        "left": left / 10,
-        "right": right / 10,
-        "top": top / 15,
-        "bottom": bottom / 15,
-        "text": advice,
-    })
-    
     return JsonResponse({
-        "page_id": 0,
+        "page_id": page_id,
         "left": left / 10,
         "right": right / 10,
         "top": top / 15,

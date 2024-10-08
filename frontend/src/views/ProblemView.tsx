@@ -8,17 +8,28 @@ import { getCsrfToken } from '@/utils/csrf';
 import { addToServer, getFromServer, saveToServer } from '@/utils/sync';
 import axios from 'axios';
 import { ArrowLeft } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Markdown from 'react-markdown';
 import { useNavigate, useParams } from 'react-router-dom';
 import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
 
+import 'katex/dist/katex.min.css';
+
+function dataURLtoBlob(dataURL: string): Blob {
+    const byteString = atob(dataURL.split(',')[1]);
+    const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
+    return new Blob([ab], { type: mimeString });
+}
 
 const ProblemView: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [pageData, setPageData] = useState<PageData[]>([{ strokes: [], }]);
     const [problemText, setProblemText] = useState<string>('');
+    const canvasRefs = useRef<HTMLCanvasElement[]>([]);
 
     const [hint, setHint] = useState<Hint | null>(null);
 
@@ -44,15 +55,28 @@ const ProblemView: React.FC = () => {
     }
 
     const handleAIClick = async (e: TouchEvent) => {
+        if (id === undefined) return;
+        const formData = new FormData();
+        formData.append('problem_id', id);
+
+        // images : File[]
+        
+        const images = canvasRefs.current.map((canvas, index) => {
+            const dataURL = canvas.toDataURL('image/png');
+            const blob = dataURLtoBlob(dataURL);
+            return new File([blob], `page_${index}.png`, { type: 'image/png' });
+        });
+
+        images.slice(0, images.length - 1).forEach((image) => {
+            formData.append('images', image);
+        });
+
         await axios.post(
             window.location.origin + '/api/ai/',
-            {
-                problem_id: id,
-                texts: JSON.stringify(pageData),
-            },
+            formData,
             {
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'multipart/form-data',
                     'X-CSRFToken': getCsrfToken(),
                 }
             }
@@ -82,7 +106,11 @@ const ProblemView: React.FC = () => {
                 </Markdown>
             </div>
             {Array.from({ length: pageData.length }).map((_, index) => (
-                <ProblemCanvas key={index} penType={penType} pageData={pageData[index]} hint={hint?.page_id === index ? hint : null}
+                <ProblemCanvas
+                    key={index} penType={penType} pageData={pageData[index]} hint={hint?.page_id === index ? hint : null}
+                    setCanvas={(canvas: HTMLCanvasElement) => {
+                        canvasRefs.current[index] = canvas;
+                    }}
                     setPageData={(data) => {
                         setPageData((pageData) => {
                             pageData[index] = data;
