@@ -8,6 +8,7 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 
 import '../styles/kalam_katex.css';
+import { Button } from './ui/button';
 
 interface ProblemCanvasProps {
     penType: 'pen' | 'eraser';
@@ -106,6 +107,13 @@ const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType, pageData, setPag
                     </>
                 )
             }
+            <Button
+                variant="ghost"
+                className="absolute right-4 bottom-4 opacity-50"
+                onClick={() => setPageData({ strokes: [] })}
+            >
+                Clear
+            </Button>
         </div>
     );
 };
