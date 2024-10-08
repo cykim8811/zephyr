@@ -44,20 +44,24 @@ def build_screen(page_data: Dict[str, List[Dict[str, Union[str, List[Dict[int, i
                 end = (round(points[i+1]['x'] * scale), round(points[i+1]['y'] * scale))
                 draw.line([start, end], fill=color, width=width)
     
+    overlay = Image.new('RGBA', (round(834 * scale), round(1179 * scale)), (0, 0, 0, 0))
+    overlay_draw = ImageDraw.Draw(overlay)
     for i in range(xcnt+1):
-        draw.line([(833 * scale / xcnt * i, 0), (833 * scale / xcnt * i, 1179 * scale)], fill='blue', width=round(1 * scale))
+        overlay_draw.line([(833 * scale / xcnt * i, 0), (833 * scale / xcnt * i, 1179 * scale)], fill='blue', width=round(1 * scale))
     for i in range(ycnt+1):
-        draw.line([(0, 1179 * scale / ycnt * i), (833 * scale, 1179 * scale / ycnt * i)], fill='blue', width=round(1 * scale))
+        overlay_draw.line([(0, 1179 * scale / ycnt * i), (833 * scale, 1179 * scale / ycnt * i)], fill='blue', width=round(1 * scale))
 
     for ix in range(xcnt):
         for iy in range(ycnt):
             iya = chr(ord('A') + iy)
-            draw.text(
+            overlay_draw.text(
                 (833 * scale / xcnt * ix + xcnt, 1179 * scale / ycnt * iy + 5),
                 f"{iya}{ix}",
-                fill='#0000FF88',
-                font=ImageFont.load_default().font_variant(size=round(46 * scale))
+                fill='#0000FF33',
+                font=ImageFont.load_default().font_variant(size=round(52 * scale))
             )
+    
+    img = Image.alpha_composite(img, overlay)
 
     # 이미지를 Base64로 인코딩
     buffered = BytesIO()
@@ -140,7 +144,7 @@ t = 1\\text{일 때} \\frac{dy}{dx}=-\\frac{2\\pi}{3} \\text{이다.} \\\\
 학생의 풀이에서 오답이 발생한 부분의 좌표를 입력하시오. 좌표는 다음과 같이 입력하시오.
 - 학생이 작성한 오답을 작성하시오.
     ex) $a_n = a_{n-1} + 2$
-- 오답이 발생한 위치의 가운데 박스를 찾아내시오.
+- 오답이 발생한 위치를 대표하는 박스를 하나 찾아내시오.
     ex) C3
     ex) F3
     ex) J7
@@ -155,6 +159,7 @@ t = 1\\text{일 때} \\frac{dy}{dx}=-\\frac{2\\pi}{3} \\text{이다.} \\\\
 
 ### 3. 출력
 - 위의 내용을 바탕으로 XML 형식으로 출력하시오. LaTeX 수식은 필히 $로 감싸서 작성하시오. 그렇지 않으면 오답처리됩니다.
+- output 태그 안에 left, right, top, bottom, advice를 넣어서 출력하시오.
 
 # 예시
 ### 1. 오류 검출
@@ -173,14 +178,14 @@ t = 1\\text{일 때} \\frac{dy}{dx}=-\\frac{2\\pi}{3} \\text{이다.} \\\\
 1. 학생은 수열 식을 세우려 하였습니다. Skill -, 수열 식은 $a_n = a_{n-1} + 3$이어야 합니다. 학생은 $a_n = a_{n-1} + 2$이라 답하였습니다. 학생은 식을 잘못 세웠습니다. (X)
 
 ### 2-1. (오류가 있을 시) 조언
-"공차와 8번째 항이 있을 때, 첫 번째 항을 구하려면 어떻게 해야 할까요?"
+"공차와 8번째 항이 있을 때, $a_1$을 구하려면 어떻게 해야 할까요?"
 
 <output>
     <left>3</left>
     <right>5</right>
     <top>G</top>
     <bottom>J</bottom>
-    <advice>공차와 8번째 항이 있을 때, 첫 번째 항을 구하려면 어떻게 해야 할까요?</advice>
+    <advice>공차와 8번째 항이 있을 때, $a_1$을 구하려면 어떻게 해야 할까요?</advice>
 </output>
 """
 
@@ -221,7 +226,7 @@ def request_ai(request):
                         "type": "image_url",
                         "image_url": {
                             "url": f"data:image/jpeg;base64,{res}",
-                            "detail": "high",
+                            "detail": "low",
                         },
                     },
                 ],
