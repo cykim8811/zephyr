@@ -4,18 +4,89 @@ import React, { useEffect, useRef } from "react";
 
 const dpr = window.devicePixelRatio || 1;
 
+const penWidth = 1.8;
+const dotDistance = 1;
+
+function drawStroke(ctx: CanvasRenderingContext2D, original_stroke: Stroke) {
+    const stroke = {
+        type: original_stroke.type,
+        points: original_stroke.points.map(p => ({ x: p.x, y: p.y }))
+    };
+
+    for (let i = 1; i < stroke.points.length - 1; i++) {
+        const p0 = stroke.points[i - 1];
+        const p1 = stroke.points[i];
+        const p2 = stroke.points[i + 1];
+
+        const m = { x: (p0.x + p2.x) / 2, y: (p0.y + p2.y) / 2 };
+        const dx = (p1.x - m.x) * 0.5;
+        const dy = (p1.y - m.y) * 0.5;
+
+        stroke.points[i] = { x: p1.x - dx, y: p1.y - dy };
+    }
+
+    ctx.lineWidth = stroke.type === 'pen' ? penWidth * dpr : 60 * dpr;
+    ctx.strokeStyle = stroke.type === 'pen' ? 'black' : 'white';
+
+    if (stroke.points.length < 2) return;
+
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    ctx.beginPath();
+
+    // 첫 점으로 이동
+    ctx.moveTo(stroke.points[0].x * dpr, stroke.points[0].y * dpr);
+
+    // 베지어 곡선을 사용한 스플라인 보간
+    for (let i = 1; i < stroke.points.length - 2; i++) {
+        const xc = (stroke.points[i].x + stroke.points[i + 1].x) / 2 * dpr;
+        const yc = (stroke.points[i].y + stroke.points[i + 1].y) / 2 * dpr;
+        ctx.quadraticCurveTo(
+            stroke.points[i].x * dpr,
+            stroke.points[i].y * dpr,
+            xc, yc
+        );
+    }
+
+    // 마지막 두 점을 처리
+    if (stroke.points.length > 2) {
+        ctx.quadraticCurveTo(
+            stroke.points[stroke.points.length - 2].x * dpr,
+            stroke.points[stroke.points.length - 2].y * dpr,
+            stroke.points[stroke.points.length - 1].x * dpr,
+            stroke.points[stroke.points.length - 1].y * dpr
+        );
+    }
+
+    ctx.stroke();
+}
+
 export function useProblemCanvasHooks(
     canvasRef: React.RefObject<HTMLCanvasElement>,
     eraserDisplayRef: React.RefObject<HTMLDivElement>,
     penType: "pen" | "eraser",
     pageData: PageData,
     setPageData: (pageData: PageData) => void,
-    addPageData: (stroke: Stroke) => void) {
+    addPageData: (stroke: Stroke) => void,
+    overlayCanvasRef: React.RefObject<HTMLCanvasElement>) {
 
     const pageDataRef = useRef(pageData);
 
     const lastPointRef = useRef<{ x: number; y: number }[]>([]);
     const penTypeRef = useRef(penType);
+
+    const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
+    const overlayCtxRef = useRef<CanvasRenderingContext2D | null>(null);
+
+    useEffect(() => {
+        if (canvasRef.current) {
+            ctxRef.current = canvasRef.current.getContext('2d');
+        }
+        if (overlayCanvasRef.current) {
+            overlayCtxRef.current = overlayCanvasRef.current.getContext('2d');
+        }
+    }, []);
 
     useEffect(() => {
         penTypeRef.current = penType;
@@ -47,12 +118,11 @@ export function useProblemCanvasHooks(
             e.stopPropagation();
         }
     }
-
     const handlePointerMove = (e: PointerEvent) => {
         if (e.pointerType === 'pen') {
             const canvas = canvasRef.current;
             if (!canvas) return;
-            const ctx = canvas.getContext('2d');
+            const ctx = ctxRef.current;
             if (!ctx) return;
 
             if (penTypeRef.current === 'eraser') {
@@ -60,27 +130,26 @@ export function useProblemCanvasHooks(
                 eraserDisplayRef.current!.style.top = e.clientY + 'px';
             }
 
-            const dist = Math.hypot(e.clientX - lastPointRef.current[lastPointRef.current.length - 1].x, e.clientY - canvas.getBoundingClientRect().top - lastPointRef.current[lastPointRef.current.length - 1].y);
-            if (dist < 2) return;
+            if (!overlayCtxRef.current) return;
 
-            lastPointRef.current.push({ x: e.clientX, y: e.clientY - canvas.getBoundingClientRect().top });
+            overlayCtxRef.current?.clearRect(0, 0, canvas.width, canvas.height);
 
-            ctx.lineWidth = penTypeRef.current === 'pen' ? 2 * dpr : 60 * dpr;
-            ctx.lineCap = 'round';
+            const currentPoint = { x: e.clientX, y: e.clientY - canvas.getBoundingClientRect().top };
 
-            if (penTypeRef.current === 'pen') {
-                ctx.strokeStyle = 'black';
-                // ctx.globalCompositeOperation = 'source-over';
-            } else {
-                ctx.strokeStyle = 'white';
-                // ctx.globalCompositeOperation = 'destination-out';
+            const dist = Math.hypot(currentPoint.x - lastPointRef.current.slice(-1)[0].x, currentPoint.y - lastPointRef.current.slice(-1)[0].y);
+
+            lastPointRef.current.push(currentPoint);
+
+            const stroke = {
+                type: penTypeRef.current,
+                points: lastPointRef.current.map(p => ({ x: p.x, y: p.y }))
+            };
+
+            drawStroke(overlayCtxRef.current, stroke);
+
+            if (dist < dotDistance * dpr) {
+                lastPointRef.current.pop();
             }
-
-            ctx.beginPath();
-            ctx.moveTo(lastPointRef.current[lastPointRef.current.length - 2].x * dpr, lastPointRef.current[lastPointRef.current.length - 2].y * dpr);
-            ctx.lineTo(lastPointRef.current[lastPointRef.current.length - 1].x * dpr, lastPointRef.current[lastPointRef.current.length - 1].y * dpr);
-            ctx.stroke();
-
 
             e.preventDefault();
             e.stopPropagation();
@@ -92,8 +161,15 @@ export function useProblemCanvasHooks(
             // Check if canvas is all white
             const canvas = canvasRef.current;
             if (!canvas) return;
-            const ctx = canvas.getContext('2d');
+            const ctx = ctxRef.current;
             if (!ctx) return;
+
+            lastPointRef.current.push({ x: e.clientX, y: e.clientY - canvas.getBoundingClientRect().top });
+
+            drawStroke(ctx, {
+                type: penTypeRef.current,
+                points: lastPointRef.current.map(p => ({ x: p.x, y: p.y }))
+            });
 
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
             let isWhite = true;
@@ -123,40 +199,32 @@ export function useProblemCanvasHooks(
     function redrawCanvas() {
         const canvas = canvasRef.current;
         if (!canvas) return;
-        const ctx = canvas.getContext('2d');
+        const ctx = ctxRef.current;
         if (!ctx) return;
 
         ctx.fillStyle = 'white';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+
         pageData.strokes.forEach(stroke => {
-            ctx.lineWidth = stroke.type === 'pen' ? 2 * dpr : 60 * dpr;
-            ctx.lineCap = 'round';
-
-            if (stroke.type === 'pen') {
-                ctx.strokeStyle = 'black';
-                // ctx.globalCompositeOperation = 'source-over';
-            } else {
-                ctx.strokeStyle = 'white';
-                // ctx.globalCompositeOperation = 'destination-out';
-            }
-
-            ctx.beginPath();
-            ctx.moveTo(stroke.points[0].x * dpr, stroke.points[0].y * dpr);
-            stroke.points.slice(1).forEach(point => {
-                ctx.lineTo(point.x * dpr, point.y * dpr);
-            });
-            ctx.stroke();
+            drawStroke(ctx, stroke);
         });
     }
 
     useEffect(() => {
         const canvas = canvasRef.current;
+        const overlayCanvas = overlayCanvasRef.current;
         if (!canvas) return;
+        if (!overlayCanvas) return;
         canvas.width = canvas.clientWidth * dpr;
         canvas.height = canvas.clientHeight * dpr;
+        overlayCanvas.width = overlayCanvas.clientWidth * dpr;
+        overlayCanvas.height = overlayCanvas.clientHeight * dpr;
 
-        const ctx = canvas.getContext('2d');
+        const ctx = ctxRef.current;
         if (!ctx) return;
+
+        ctx.translate(0.5, 0.5);
+        overlayCtxRef.current?.translate(0.5, 0.5);
 
         ctx.fillStyle = 'white';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
