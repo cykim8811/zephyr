@@ -51,18 +51,31 @@ def preprocess2(image: Image, total_width) -> Image:
     # get boxes
     boxes = get_boxes(image)
 
+    # colors
+    colors = [
+        {"name": "red", "color": (255, 0, 0, 255)},
+        {"name": "green", "color": (0, 255, 0, 255)},
+        {"name": "yellow", "color": (255, 255, 0, 255)},
+        {"name": "orange", "color": (255, 165, 0, 255)},
+    ]
+    backgrounds = [
+        {"name": "black", "color": (0, 0, 0, 255)},
+        {"name": "gray", "color": (128, 128, 128, 255)},
+        {"name": "purple", "color": (96, 0, 96, 255)},
+        {"name": "blue", "color": (0, 0, 128, 255)},
+    ]
+
     # draw boxes
     for ind, box in enumerate(boxes):
+        import random
+        ind = random.randint(0, 100)
         left, top, right, bottom = box
-        draw.rectangle([left, top, right, bottom], outline=(0, 0, 255, 255), width=2)
-
-        text = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[ind]
-        font = ImageFont.load_default().font_variant(size=96)
-        _, _, text_width, text_height = font.getbbox(text)
-
-        x = (left + right) / 2 - text_width / 2
-        y = (top + bottom) / 2 - text_height / 2
-        draw.text((x, y), text, fill=(0, 0, 255, 96), font=font)
+        for x in range(left, right):
+            for y in range(top, bottom):
+                if sum(image.getpixel((x, y))[:3]) < 100:
+                    draw.point((x, y), fill=colors[ind % len(colors)]["color"])
+                else:
+                    draw.point((x, y), fill=backgrounds[(ind // len(colors)) % len(backgrounds)]["color"])
 
     return Image.alpha_composite(image, overlay), boxes
 
@@ -85,16 +98,20 @@ You are required to analyze the location of the problem solving.
 
 # Instruction
 - The goal is to extract the text of the target step from among the surrounding texts.
-- The target text is marked with a blue box and labeled with an alphabet or number.
-- List the alphabet or number of all boxes corresponding to the target text.
-- The order of the list does not matter.
+- The target text are colored in different colors and background colors.
+- Please provide the colors and background colors of, all parts of the target text.
+
+# Possible colors
+red, green, yellow, orange
+
+# Possible background colors
+black, gray, white
 
 # Example
-- (2,)
-- (4, 3, 7)
-- (F,)
-- (6, 5)
-- (A, 1, 6, D)
+- ((red, black),)
+- ((green, gray), (yellow, white))
+- ((red, black), (green, black), (yellow, white), (orange, black))
+
 """
 
 async def parse(problem, images, step, idx):
