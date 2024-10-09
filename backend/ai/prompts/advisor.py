@@ -13,98 +13,91 @@ client = AsyncOpenAI()
 
 padding = 0.1
 
+from PIL import Image
+import cv2
+import numpy as np
+
+def get_boxes(image: Image):
+    """
+    이미지에서 수식을 감지하고 바운딩 박스를 그린 후, 박스 좌표를 리턴하는 함수.
+    """
+    # PIL 이미지를 OpenCV 이미지로 변환
+    cv_image = np.array(image.convert('L'))  # Grayscale로 변환
+
+    # 이진화 처리
+    _, binary_image = cv2.threshold(cv_image, 150, 255, cv2.THRESH_BINARY_INV)
+
+    # 가로 방향으로 더 합치고 세로 방향은 더 엄격하게 커널 설정
+    kernel = np.ones((15, 60), np.uint8)  # 세로 방향은 작게, 가로 방향은 크게
+    dilated_image = cv2.dilate(binary_image, kernel, iterations=1)
+
+    # 외곽선 찾기
+    contours, _ = cv2.findContours(dilated_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    # 바운딩 박스 좌표들을 저장할 리스트
+    bounding_boxes = []
+
+    # 바운딩 박스 추출
+    for contour in contours:
+        x, y, w, h = cv2.boundingRect(contour)
+        bounding_boxes.append((x, y, x + w, y + h))  # 좌표를 (x1, y1, x2, y2) 형태로 저장
+
+    return bounding_boxes
+
 def preprocess2(image: Image, total_width) -> Image:
-    grid_x_num = 10
-    grid_y_num = math.ceil(image.height / image.width * grid_x_num)
     overlay = Image.new("RGBA", image.size, (0, 0, 0, 0))
     draw = ImageDraw.Draw(overlay)
 
-    width, height = image.size
+    # get boxes
+    boxes = get_boxes(image)
 
-    for i in range(grid_x_num + 1):
-        x = (width - 2) * i // grid_x_num
-        draw.line([(x, 0), (x, height)], fill=(0, 0, 255, 255), width=2)
+    # draw boxes
+    for ind, box in enumerate(boxes):
+        left, top, right, bottom = box
+        draw.rectangle([left, top, right, bottom], outline=(0, 0, 255, 255), width=2)
 
-    for i in range(grid_y_num + 1):
-        y = (height - 2) * i // grid_y_num
-        draw.line([(0, y), (width, y)], fill=(0, 0, 255, 255), width=2)
+        text = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[ind]
+        font = ImageFont.load_default().font_variant(size=96)
+        _, _, text_width, text_height = font.getbbox(text)
 
-    for ix in range(grid_x_num):
-        for iy in range(grid_y_num):
-            text = f"{chr(ord('A') + ix)}{iy + 1}"
-            font = ImageFont.load_default().font_variant(size=round(64 * image.width / total_width))
-            _, _, text_width, text_height = font.getbbox(text)
-            x = (width - 2) * (ix + 0.5) // grid_x_num - text_width // 2
-            y = (height - 2) * (iy + 0.5) // grid_y_num - text_height // 2
-            draw.text((x, y), text, fill=(0, 0, 255, 96), font=font)
+        x = (left + right) / 2 - text_width / 2
+        y = (top + bottom) / 2 - text_height / 2
+        draw.text((x, y), text, fill=(0, 0, 255, 96), font=font)
 
-    return Image.alpha_composite(image, overlay)
+    return Image.alpha_composite(image, overlay), boxes
 
 
 system_prompt2 = """
-# 역할
-문제 풀이의 위치와, 오류 여부를 분석하여야 한다.
+# Role
+You are required to analyze the location of the problem solving.
 
-# 문제
+# Problem
 {problem}
 
-# 단계
+# Step to detect
 {process}
 
-# 사용된 스킬
+# Used skills
 {skill}
 
-# 텍스트 추정 (정확도 낮음)
+# Estimated text (low accuracy)
 {estimate}
 
-# 지침
-- 답안의 위치를 찾아내고, 스킬을 기반으로 해당 풀이가 올바른지 판단하여라.
-- 해당 식과 겹치는 모든 박스의 라벨을 기록하여라. 순서는 상관없다.
-ex) D5, C5, D4, G5, E5, F4, G4, E4, H5
-ex) A5, C5, B5
-ex) G6, H4, G5, F5, G4, H6, F4
-ex) F6, E5, F7, F5, E6
-- 위치, 텍스트, 옳은 풀이, 오류를 기록하여라.
-- 모든 단계를 분석한 후, 이를 XML 형식으로 변환하여라.
+# Instruction
+- The goal is to extract the text of the target step from among the surrounding texts.
+- The target text is marked with a blue box and labeled with an alphabet or number.
+- List the alphabet or number of all boxes corresponding to the target text.
+- The order of the list does not matter.
 
-# 예시 출력
-
-- (올바른 풀이일 경우)
-텍스트: 12 - 8 = 4
-해당 텍스트 위치: C3, B3, B4, F3, C4, D3, E3, E4, D4, F4
-옳은 풀이: 12 - 8 = 4
-오류: 없음
-포맷:
-<output>
-    <left>B</left>
-    <top>3</top>
-    <right>F</right>
-    <bottom>4</bottom>
-    <text>12 - 8 = 4</text>
-    <error>없음</error>
-</output>
-
-
-- (잘못된 풀이일 경우)
-텍스트: 8 - 4 * 8 = -24
-해당 텍스트 위치: D5, C6, E6, D7, C7, D6, C5, E5, E7
-옳은 풀이: 8 - 4 * 7 = -20
-오류: 초항을 잘못 계산함
-포맷:
-<output>
-    <left>C</left>
-    <top>5</top>
-    <right>E</right>
-    <bottom>7</bottom>
-    <text>8 - 4 * 7 = -20</text>
-    <error>초항을 잘못 계산함</error>
-</output>
-
+# Example
+- (2,)
+- (4, 3, 7)
+- (F,)
+- (6, 5)
+- (A, 1, 6, D)
 """
 
-from asgiref.sync import sync_to_async
-
-async def parse(problem, images, step):
+async def parse(problem, images, step, idx):
     # cut images[step["page"]] by step["left"], step["top"], step["right"], step["bottom"]
     # step["~"] is in (0, 1)
     total_left = max(step["left"] - padding, 0)
@@ -121,10 +114,9 @@ async def parse(problem, images, step):
 
 
     # add grid
-    cut_image = preprocess2(cut_image, images[step["page"]].width)
+    cut_image, boxes = preprocess2(cut_image, images[step["page"]].width)
 
-    import random
-    cut_image.save(f"temp/{random.randint(10000, 100000 - 1)}.png")
+    cut_image.save(f"temp/{idx}.png")
 
     # convert to base64
     buffered = BytesIO()
@@ -161,49 +153,49 @@ async def parse(problem, images, step):
 
     print(response.choices[0].message.content)
 
-    # parse response xml
-    data = response.choices[0].message.content
-    data = data[data.find("<output>")+8:data.find("</output>")]
-    import xml.etree.ElementTree as ET
-    root = ET.fromstring(f"<output>{data}</output>")
+    # # parse response xml
+    # data = response.choices[0].message.content
+    # data = data[data.find("<output>")+8:data.find("</output>")]
+    # import xml.etree.ElementTree as ET
+    # root = ET.fromstring(f"<output>{data}</output>")
 
-    left = root.find("left").text
-    top = root.find("top").text
-    right = root.find("right").text
-    bottom = root.find("bottom").text
+    # left = root.find("left").text
+    # top = root.find("top").text
+    # right = root.find("right").text
+    # bottom = root.find("bottom").text
 
-    left = ord(left) - ord("A")
-    top = int(top) - 1
-    right = ord(right) - ord("A") + 1
-    bottom = int(bottom)
+    # left = ord(left) - ord("A")
+    # top = int(top) - 1
+    # right = ord(right) - ord("A") + 1
+    # bottom = int(bottom)
 
-    grid_x_num = 10
-    grid_y_num = math.ceil(images[step["page"]].height / images[step["page"]].width * grid_x_num)
+    # grid_x_num = 10
+    # grid_y_num = math.ceil(images[step["page"]].height / images[step["page"]].width * grid_x_num)
 
-    left = left / grid_x_num
-    top = top / grid_y_num
-    right = right / grid_x_num
-    bottom = bottom / grid_y_num
+    # left = left / grid_x_num
+    # top = top / grid_y_num
+    # right = right / grid_x_num
+    # bottom = bottom / grid_y_num
 
-    print("step", step["left"], step["top"], step["right"], step["bottom"])
-    print("inner", left, top, right, bottom)
-    print("total", total_left, total_top, total_right, total_bottom)
+    # print("step", step["left"], step["top"], step["right"], step["bottom"])
+    # print("inner", left, top, right, bottom)
+    # print("total", total_left, total_top, total_right, total_bottom)
 
-    left = total_left + left * (total_right - total_left)
-    top = total_top + top * (total_right - total_left)
-    right = total_left + right * (total_right - total_left)
-    bottom = total_top + bottom * (total_right - total_left)
+    # left = total_left + left * (total_right - total_left)
+    # top = total_top + top * (total_right - total_left)
+    # right = total_left + right * (total_right - total_left)
+    # bottom = total_top + bottom * (total_right - total_left)
 
-    print("final", left, top, right, bottom)
+    # print("final", left, top, right, bottom)
 
-    return {
-        "page": step["page"],
-        "left": left,
-        "top": top,
-        "right": right,
-        "bottom": bottom,
-        "text": root.find("text").text,
-        "error": root.find("error").text,
-    }
+    # return {
+    #     "page": step["page"],
+    #     "left": left,
+    #     "top": top,
+    #     "right": right,
+    #     "bottom": bottom,
+    #     "text": root.find("text").text,
+    #     "error": root.find("error").text,
+    # }
     
 

@@ -29,6 +29,7 @@ system_prompt1 = """
 # 지침
 - 학생의 답안을 단계별로 분석하여라.
 - 개별 풀이 단계, 해당하는 스킬, 위치, 텍스트를 기록하여라.
+- 위치는 해당 단계의 텍스트와 겹치는 셀의 라벨을 나열하여라. 순서는 상관 없다.
 - 모든 단계를 분석한 후, 이를 XML 형식으로 변환하여라.
 - 하나의 step 은 하나의 식만 포함해야 한다.
 
@@ -43,13 +44,13 @@ system_prompt1 = """
 ### 2단계
 과정: 학생은 공차와 8번째 항을 이용하여 초항을 구하고자 함.
 스킬: Skill E
-위치: C7, C8, D7, D8, E7, E8
+위치: D7, E7, D8, C8, C7, E8
 식: 8 - 4 * 7 = -20
 
 ### 3단계
 과정: 학생은 초항과 공차를 이용하여 일반항을 구하고자 함.
 스킬: Skill F
-위치: A11, A12, B11, B12, C11, C12, D11, D12, E11, E12
+위치: D11, B12, A11, E11, B11, A12, C11, C12, D12
 식: a_n = -20 + 4 * (n - 1)
 
 ### 변환 단계
@@ -82,6 +83,9 @@ system_prompt1 = """
         <equation>a_n = -20 + 4 * (n - 1)</equation>
     </step>
 </output>
+
+# 특별 지침
+- dx/dt 관련된 식 하나에 대해서만 만들어서, step을 하나만 만들어라.
 """
 
 grid_x_num = 10
@@ -125,7 +129,7 @@ def parse(problem, images):
     # add grid
     images = [preprocess(image, i) for i, image in enumerate(images)]
 
-    save_merged_image(images, "image.png")
+    save_merged_image(images, "temp/image.png")
 
     # convert to base64
     res = []

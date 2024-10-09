@@ -32,8 +32,6 @@ def request_ai(request):
 
     steps = step_parser.parse(problem, images)
 
-    # advices = [advisor.parse(problem, images, step) for step in steps]
-
     import asyncio
     try:
         loop = asyncio.get_event_loop()
@@ -41,23 +39,25 @@ def request_ai(request):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
 
-    # advices = asyncio.run(asyncio.gather(*[advisor.parse(problem, images, step) for step in steps]))
-    async def get_advice(step):
-        return await advisor.parse(problem, images, step)
-    advices = loop.run_until_complete(asyncio.gather(*[get_advice(step) for step in steps]))
+    # # advices = asyncio.run(asyncio.gather(*[advisor.parse(problem, images, step) for step in steps]))
+    # async def get_advice(step, idx):
+    #     return await advisor.parse(problem, images, step, idx)
+    # advices = loop.run_until_complete(asyncio.gather(*[get_advice(step, idx) for idx, step in enumerate(steps)]))
 
-    print(advices)
+    # print(advices)
 
-    return JsonResponse([
-        {
-            "page_id": advice["page"],
-            "left": advice["left"],
-            "top": advice["top"],
-            "right": advice["right"],
-            "bottom": advice["bottom"],
-            "text": advice["error"],
-        }
-        for advice in advices
-    ], safe=False)
+    loop.run_until_complete(advisor.parse(problem, images, steps[0], 0))
+
+    # return JsonResponse([
+    #     {
+    #         "page_id": advice["page"],
+    #         "left": advice["left"],
+    #         "top": advice["top"],
+    #         "right": advice["right"],
+    #         "bottom": advice["bottom"],
+    #         "text": advice["error"],
+    #     }
+    #     for advice in advices
+    # ], safe=False)
 
 

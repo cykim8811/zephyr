@@ -79,7 +79,6 @@ const ProblemView: React.FC = () => {
                     'Content-Type': 'multipart/form-data',
                     'X-CSRFToken': getCsrfToken(),
                 },
-                timeout: 300000,
             }
         ).then((response) => {
             setHints(response.data);
