@@ -32,15 +32,32 @@ def request_ai(request):
 
     steps = step_parser.parse(problem, images)
 
-    advisor.parse(problem, images, steps[1])
+    # advices = [advisor.parse(problem, images, step) for step in steps]
 
-    return JsonResponse({
-        "page_id": steps[0]["page"],
-        "left": steps[0]["left"],
-        "top": steps[0]["top"],
-        "right": steps[0]["right"],
-        "bottom": steps[0]["bottom"],
-        "text": steps[0]["equation"]
-    })
+    import asyncio
+    try:
+        loop = asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+
+    # advices = asyncio.run(asyncio.gather(*[advisor.parse(problem, images, step) for step in steps]))
+    async def get_advice(step):
+        return await advisor.parse(problem, images, step)
+    advices = loop.run_until_complete(asyncio.gather(*[get_advice(step) for step in steps]))
+
+    print(advices)
+
+    return JsonResponse([
+        {
+            "page_id": advice["page"],
+            "left": advice["left"],
+            "top": advice["top"],
+            "right": advice["right"],
+            "bottom": advice["bottom"],
+            "text": advice["error"],
+        }
+        for advice in advices
+    ], safe=False)
 
 

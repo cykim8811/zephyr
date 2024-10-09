@@ -119,23 +119,23 @@
     font-weight: normal;
     font-style: normal;
   }
-  p .katex {
+  .kalam .katex {
     /* font: normal 1.21em KaTeX_Main, Times New Roman, serif; */
     font: normal 1.21em Kalam, cursive;
     line-height: 1.2;
     text-indent: 0;
     text-rendering: auto;
   }
-  p .katex * {
+  .kalam .katex * {
     -ms-high-contrast-adjust: none !important;
   }
-  p .katex * {
+  .kalam .katex * {
     border-color: currentColor;
   }
-  p .katex .katex-version::after {
+  .kalam .katex .katex-version::after {
     content: "0.16.11";
   }
-  p .katex .katex-mathml {
+  .kalam .katex .katex-mathml {
     /* Accessibility hack to only show to screen readers
      Found at: http://a11yproject.com/posts/how-to-hide-content/ */
     position: absolute;
@@ -146,13 +146,13 @@
     width: 1px;
     overflow: hidden;
   }
-  p .katex .katex-html {
+  .kalam .katex .katex-html {
     /* \newline is an empty block at top level, between .base elements */
   }
-  p .katex .katex-html > .newline {
+  .kalam .katex .katex-html > .newline {
     display: block;
   }
-  p .katex .base {
+  .kalam .katex .base {
     position: relative;
     display: inline-block;
     white-space: nowrap;
@@ -160,885 +160,885 @@
     width: -moz-min-content;
     width: min-content;
   }
-  p .katex .strut {
+  .kalam .katex .strut {
     display: inline-block;
   }
-  p .katex .textbf {
+  .kalam .katex .textbf {
     font-weight: bold;
   }
-  p .katex .textit {
+  .kalam .katex .textit {
     font-style: italic;
   }
-  p .katex .textrm {
+  .kalam .katex .textrm {
     /* font-family: KaTeX_Main; */ font-family: Kalam, cursive;
   }
-  p .katex .textsf {
+  .kalam .katex .textsf {
     /* font-family: KaTeX_SansSerif; */ font-family: Kalam, cursive;
   }
-  p .katex .texttt {
+  .kalam .katex .texttt {
     /* font-family: KaTeX_Typewriter; */ font-family: Kalam, cursive;
   }
-  p .katex .mathnormal {
+  .kalam .katex .mathnormal {
     /* font-family: KaTeX_Math; */ font-family: Kalam, cursive;
     font-style: italic;
   }
-  p .katex .mathit {
+  .kalam .katex .mathit {
     /* font-family: KaTeX_Main; */ font-family: Kalam, cursive;
     font-style: italic;
   }
-  p .katex .mathrm {
+  .kalam .katex .mathrm {
     font-style: normal;
   }
-  p .katex .mathbf {
+  .kalam .katex .mathbf {
     /* font-family: KaTeX_Main; */ font-family: Kalam, cursive;
     font-weight: bold;
   }
-  p .katex .boldsymbol {
+  .kalam .katex .boldsymbol {
     /* font-family: KaTeX_Math; */ font-family: Kalam, cursive;
     font-weight: bold;
     font-style: italic;
   }
-  p .katex .amsrm {
+  .kalam .katex .amsrm {
     /* font-family: KaTeX_AMS; */ font-family: Kalam, cursive;
   }
-  p .katex .mathbb,
-  p .katex .textbb {
+  .kalam .katex .mathbb,
+  .kalam .katex .textbb {
     /* font-family: KaTeX_AMS; */ font-family: Kalam, cursive;
   }
-  p .katex .mathcal {
+  .kalam .katex .mathcal {
     /* font-family: KaTeX_Caligraphic; */ font-family: Kalam, cursive;
   }
-  p .katex .mathfrak,
-  p .katex .textfrak {
+  .kalam .katex .mathfrak,
+  .kalam .katex .textfrak {
     /* font-family: KaTeX_Fraktur; */ font-family: Kalam, cursive;
   }
-  p .katex .mathboldfrak,
-  p .katex .textboldfrak {
+  .kalam .katex .mathboldfrak,
+  .kalam .katex .textboldfrak {
     /* font-family: KaTeX_Fraktur; */ font-family: Kalam, cursive;
     font-weight: bold;
   }
-  p .katex .mathtt {
+  .kalam .katex .mathtt {
     /* font-family: KaTeX_Typewriter; */ font-family: Kalam, cursive;
   }
-  p .katex .mathscr,
-  p .katex .textscr {
+  .kalam .katex .mathscr,
+  .kalam .katex .textscr {
     /* font-family: KaTeX_Script; */ font-family: Kalam, cursive;
   }
-  p .katex .mathsf,
-  p .katex .textsf {
+  .kalam .katex .mathsf,
+  .kalam .katex .textsf {
     /* font-family: KaTeX_SansSerif; */ font-family: Kalam, cursive;
   }
-  p .katex .mathboldsf,
-  p .katex .textboldsf {
+  .kalam .katex .mathboldsf,
+  .kalam .katex .textboldsf {
     /* font-family: KaTeX_SansSerif; */ font-family: Kalam, cursive;
     font-weight: bold;
   }
-  p .katex .mathitsf,
-  p .katex .textitsf {
+  .kalam .katex .mathitsf,
+  .kalam .katex .textitsf {
     /* font-family: KaTeX_SansSerif; */ font-family: Kalam, cursive;
     font-style: italic;
   }
-  p .katex .mainrm {
+  .kalam .katex .mainrm {
     /* font-family: KaTeX_Main; */ font-family: Kalam, cursive;
     font-style: normal;
   }
-  p .katex .vlist-t {
+  .kalam .katex .vlist-t {
     display: inline-table;
     table-layout: fixed;
     border-collapse: collapse;
   }
-  p .katex .vlist-r {
+  .kalam .katex .vlist-r {
     display: table-row;
   }
-  p .katex .vlist {
+  .kalam .katex .vlist {
     display: table-cell;
     vertical-align: bottom;
     position: relative;
   }
-  p .katex .vlist > span {
+  .kalam .katex .vlist > span {
     display: block;
     height: 0;
     position: relative;
   }
-  p .katex .vlist > span > span {
+  .kalam .katex .vlist > span > span {
     display: inline-block;
   }
-  p .katex .vlist > span > .pstrut {
+  .kalam .katex .vlist > span > .pstrut {
     overflow: hidden;
     width: 0;
   }
-  p .katex .vlist-t2 {
+  .kalam .katex .vlist-t2 {
     margin-right: -2px;
   }
-  p .katex .vlist-s {
+  .kalam .katex .vlist-s {
     display: table-cell;
     vertical-align: bottom;
     font-size: 1px;
     width: 2px;
     min-width: 2px;
   }
-  p .katex .vbox {
+  .kalam .katex .vbox {
     display: inline-flex;
     flex-direction: column;
     align-items: baseline;
   }
-  p .katex .hbox {
+  .kalam .katex .hbox {
     display: inline-flex;
     flex-direction: row;
     width: 100%;
   }
-  p .katex .thinbox {
+  .kalam .katex .thinbox {
     display: inline-flex;
     flex-direction: row;
     width: 0;
     max-width: 0;
   }
-  p .katex .msupsub {
+  .kalam .katex .msupsub {
     text-align: left;
   }
-  p .katex .mfrac > span > span {
+  .kalam .katex .mfrac > span > span {
     text-align: center;
   }
-  p .katex .mfrac .frac-line {
+  .kalam .katex .mfrac .frac-line {
     display: inline-block;
     width: 100%;
     border-bottom-style: solid;
   }
-  p .katex .mfrac .frac-line,
-  p .katex .overline .overline-line,
-  p .katex .underline .underline-line,
-  p .katex .hline,
-  p .katex .hdashline,
-  p .katex .rule {
+  .kalam .katex .mfrac .frac-line,
+  .kalam .katex .overline .overline-line,
+  .kalam .katex .underline .underline-line,
+  .kalam .katex .hline,
+  .kalam .katex .hdashline,
+  .kalam .katex .rule {
     min-height: 1px;
   }
-  p .katex .mspace {
+  .kalam .katex .mspace {
     display: inline-block;
   }
-  p .katex .llap,
-  p .katex .rlap,
-  p .katex .clap {
+  .kalam .katex .llap,
+  .kalam .katex .rlap,
+  .kalam .katex .clap {
     width: 0;
     position: relative;
   }
-  p .katex .llap > .inner,
-  p .katex .rlap > .inner,
-  p .katex .clap > .inner {
+  .kalam .katex .llap > .inner,
+  .kalam .katex .rlap > .inner,
+  .kalam .katex .clap > .inner {
     position: absolute;
   }
-  p .katex .llap > .fix,
-  p .katex .rlap > .fix,
-  p .katex .clap > .fix {
+  .kalam .katex .llap > .fix,
+  .kalam .katex .rlap > .fix,
+  .kalam .katex .clap > .fix {
     display: inline-block;
   }
-  p .katex .llap > .inner {
+  .kalam .katex .llap > .inner {
     right: 0;
   }
-  p .katex .rlap > .inner,
-  p .katex .clap > .inner {
+  .kalam .katex .rlap > .inner,
+  .kalam .katex .clap > .inner {
     left: 0;
   }
-  p .katex .clap > .inner > span {
+  .kalam .katex .clap > .inner > span {
     margin-left: -50%;
     margin-right: 50%;
   }
-  p .katex .rule {
+  .kalam .katex .rule {
     display: inline-block;
     border: solid 0;
     position: relative;
   }
-  p .katex .overline .overline-line,
-  p .katex .underline .underline-line,
-  p .katex .hline {
+  .kalam .katex .overline .overline-line,
+  .kalam .katex .underline .underline-line,
+  .kalam .katex .hline {
     display: inline-block;
     width: 100%;
     border-bottom-style: solid;
   }
-  p .katex .hdashline {
+  .kalam .katex .hdashline {
     display: inline-block;
     width: 100%;
     border-bottom-style: dashed;
   }
-  p .katex .sqrt > .root {
+  .kalam .katex .sqrt > .root {
     /* These values are taken from the definition of `\r@@t`,
      `\mkern 5mu` and `\mkern -10mu`. */
     margin-left: 0.2777777778em;
     margin-right: -0.5555555556em;
   }
-  p .katex .sizing.reset-size1.size1,
-  p .katex .fontsize-ensurer.reset-size1.size1 {
+  .kalam .katex .sizing.reset-size1.size1,
+  .kalam .katex .fontsize-ensurer.reset-size1.size1 {
     /* stylelint-disable-next-line */
     font-size: 1em;
   }
-  p .katex .sizing.reset-size1.size2,
-  p .katex .fontsize-ensurer.reset-size1.size2 {
+  .kalam .katex .sizing.reset-size1.size2,
+  .kalam .katex .fontsize-ensurer.reset-size1.size2 {
     /* stylelint-disable-next-line */
     font-size: 1.2em;
   }
-  p .katex .sizing.reset-size1.size3,
-  p .katex .fontsize-ensurer.reset-size1.size3 {
+  .kalam .katex .sizing.reset-size1.size3,
+  .kalam .katex .fontsize-ensurer.reset-size1.size3 {
     /* stylelint-disable-next-line */
     font-size: 1.4em;
   }
-  p .katex .sizing.reset-size1.size4,
-  p .katex .fontsize-ensurer.reset-size1.size4 {
+  .kalam .katex .sizing.reset-size1.size4,
+  .kalam .katex .fontsize-ensurer.reset-size1.size4 {
     /* stylelint-disable-next-line */
     font-size: 1.6em;
   }
-  p .katex .sizing.reset-size1.size5,
-  p .katex .fontsize-ensurer.reset-size1.size5 {
+  .kalam .katex .sizing.reset-size1.size5,
+  .kalam .katex .fontsize-ensurer.reset-size1.size5 {
     /* stylelint-disable-next-line */
     font-size: 1.8em;
   }
-  p .katex .sizing.reset-size1.size6,
-  p .katex .fontsize-ensurer.reset-size1.size6 {
+  .kalam .katex .sizing.reset-size1.size6,
+  .kalam .katex .fontsize-ensurer.reset-size1.size6 {
     /* stylelint-disable-next-line */
     font-size: 2em;
   }
-  p .katex .sizing.reset-size1.size7,
-  p .katex .fontsize-ensurer.reset-size1.size7 {
+  .kalam .katex .sizing.reset-size1.size7,
+  .kalam .katex .fontsize-ensurer.reset-size1.size7 {
     /* stylelint-disable-next-line */
     font-size: 2.4em;
   }
-  p .katex .sizing.reset-size1.size8,
-  p .katex .fontsize-ensurer.reset-size1.size8 {
+  .kalam .katex .sizing.reset-size1.size8,
+  .kalam .katex .fontsize-ensurer.reset-size1.size8 {
     /* stylelint-disable-next-line */
     font-size: 2.88em;
   }
-  p .katex .sizing.reset-size1.size9,
-  p .katex .fontsize-ensurer.reset-size1.size9 {
+  .kalam .katex .sizing.reset-size1.size9,
+  .kalam .katex .fontsize-ensurer.reset-size1.size9 {
     /* stylelint-disable-next-line */
     font-size: 3.456em;
   }
-  p .katex .sizing.reset-size1.size10,
-  p .katex .fontsize-ensurer.reset-size1.size10 {
+  .kalam .katex .sizing.reset-size1.size10,
+  .kalam .katex .fontsize-ensurer.reset-size1.size10 {
     /* stylelint-disable-next-line */
     font-size: 4.148em;
   }
-  p .katex .sizing.reset-size1.size11,
-  p .katex .fontsize-ensurer.reset-size1.size11 {
+  .kalam .katex .sizing.reset-size1.size11,
+  .kalam .katex .fontsize-ensurer.reset-size1.size11 {
     /* stylelint-disable-next-line */
     font-size: 4.976em;
   }
-  p .katex .sizing.reset-size2.size1,
-  p .katex .fontsize-ensurer.reset-size2.size1 {
+  .kalam .katex .sizing.reset-size2.size1,
+  .kalam .katex .fontsize-ensurer.reset-size2.size1 {
     /* stylelint-disable-next-line */
     font-size: 0.8333333333em;
   }
-  p .katex .sizing.reset-size2.size2,
-  p .katex .fontsize-ensurer.reset-size2.size2 {
+  .kalam .katex .sizing.reset-size2.size2,
+  .kalam .katex .fontsize-ensurer.reset-size2.size2 {
     /* stylelint-disable-next-line */
     font-size: 1em;
   }
-  p .katex .sizing.reset-size2.size3,
-  p .katex .fontsize-ensurer.reset-size2.size3 {
+  .kalam .katex .sizing.reset-size2.size3,
+  .kalam .katex .fontsize-ensurer.reset-size2.size3 {
     /* stylelint-disable-next-line */
     font-size: 1.1666666667em;
   }
-  p .katex .sizing.reset-size2.size4,
-  p .katex .fontsize-ensurer.reset-size2.size4 {
+  .kalam .katex .sizing.reset-size2.size4,
+  .kalam .katex .fontsize-ensurer.reset-size2.size4 {
     /* stylelint-disable-next-line */
     font-size: 1.3333333333em;
   }
-  p .katex .sizing.reset-size2.size5,
-  p .katex .fontsize-ensurer.reset-size2.size5 {
+  .kalam .katex .sizing.reset-size2.size5,
+  .kalam .katex .fontsize-ensurer.reset-size2.size5 {
     /* stylelint-disable-next-line */
     font-size: 1.5em;
   }
-  p .katex .sizing.reset-size2.size6,
-  p .katex .fontsize-ensurer.reset-size2.size6 {
+  .kalam .katex .sizing.reset-size2.size6,
+  .kalam .katex .fontsize-ensurer.reset-size2.size6 {
     /* stylelint-disable-next-line */
     font-size: 1.6666666667em;
   }
-  p .katex .sizing.reset-size2.size7,
-  p .katex .fontsize-ensurer.reset-size2.size7 {
+  .kalam .katex .sizing.reset-size2.size7,
+  .kalam .katex .fontsize-ensurer.reset-size2.size7 {
     /* stylelint-disable-next-line */
     font-size: 2em;
   }
-  p .katex .sizing.reset-size2.size8,
-  p .katex .fontsize-ensurer.reset-size2.size8 {
+  .kalam .katex .sizing.reset-size2.size8,
+  .kalam .katex .fontsize-ensurer.reset-size2.size8 {
     /* stylelint-disable-next-line */
     font-size: 2.4em;
   }
-  p .katex .sizing.reset-size2.size9,
-  p .katex .fontsize-ensurer.reset-size2.size9 {
+  .kalam .katex .sizing.reset-size2.size9,
+  .kalam .katex .fontsize-ensurer.reset-size2.size9 {
     /* stylelint-disable-next-line */
     font-size: 2.88em;
   }
-  p .katex .sizing.reset-size2.size10,
-  p .katex .fontsize-ensurer.reset-size2.size10 {
+  .kalam .katex .sizing.reset-size2.size10,
+  .kalam .katex .fontsize-ensurer.reset-size2.size10 {
     /* stylelint-disable-next-line */
     font-size: 3.4566666667em;
   }
-  p .katex .sizing.reset-size2.size11,
-  p .katex .fontsize-ensurer.reset-size2.size11 {
+  .kalam .katex .sizing.reset-size2.size11,
+  .kalam .katex .fontsize-ensurer.reset-size2.size11 {
     /* stylelint-disable-next-line */
     font-size: 4.1466666667em;
   }
-  p .katex .sizing.reset-size3.size1,
-  p .katex .fontsize-ensurer.reset-size3.size1 {
+  .kalam .katex .sizing.reset-size3.size1,
+  .kalam .katex .fontsize-ensurer.reset-size3.size1 {
     /* stylelint-disable-next-line */
     font-size: 0.7142857143em;
   }
-  p .katex .sizing.reset-size3.size2,
-  p .katex .fontsize-ensurer.reset-size3.size2 {
+  .kalam .katex .sizing.reset-size3.size2,
+  .kalam .katex .fontsize-ensurer.reset-size3.size2 {
     /* stylelint-disable-next-line */
     font-size: 0.8571428571em;
   }
-  p .katex .sizing.reset-size3.size3,
-  p .katex .fontsize-ensurer.reset-size3.size3 {
+  .kalam .katex .sizing.reset-size3.size3,
+  .kalam .katex .fontsize-ensurer.reset-size3.size3 {
     /* stylelint-disable-next-line */
     font-size: 1em;
   }
-  p .katex .sizing.reset-size3.size4,
-  p .katex .fontsize-ensurer.reset-size3.size4 {
+  .kalam .katex .sizing.reset-size3.size4,
+  .kalam .katex .fontsize-ensurer.reset-size3.size4 {
     /* stylelint-disable-next-line */
     font-size: 1.1428571429em;
   }
-  p .katex .sizing.reset-size3.size5,
-  p .katex .fontsize-ensurer.reset-size3.size5 {
+  .kalam .katex .sizing.reset-size3.size5,
+  .kalam .katex .fontsize-ensurer.reset-size3.size5 {
     /* stylelint-disable-next-line */
     font-size: 1.2857142857em;
   }
-  p .katex .sizing.reset-size3.size6,
-  p .katex .fontsize-ensurer.reset-size3.size6 {
+  .kalam .katex .sizing.reset-size3.size6,
+  .kalam .katex .fontsize-ensurer.reset-size3.size6 {
     /* stylelint-disable-next-line */
     font-size: 1.4285714286em;
   }
-  p .katex .sizing.reset-size3.size7,
-  p .katex .fontsize-ensurer.reset-size3.size7 {
+  .kalam .katex .sizing.reset-size3.size7,
+  .kalam .katex .fontsize-ensurer.reset-size3.size7 {
     /* stylelint-disable-next-line */
     font-size: 1.7142857143em;
   }
-  p .katex .sizing.reset-size3.size8,
-  p .katex .fontsize-ensurer.reset-size3.size8 {
+  .kalam .katex .sizing.reset-size3.size8,
+  .kalam .katex .fontsize-ensurer.reset-size3.size8 {
     /* stylelint-disable-next-line */
     font-size: 2.0571428571em;
   }
-  p .katex .sizing.reset-size3.size9,
-  p .katex .fontsize-ensurer.reset-size3.size9 {
+  .kalam .katex .sizing.reset-size3.size9,
+  .kalam .katex .fontsize-ensurer.reset-size3.size9 {
     /* stylelint-disable-next-line */
     font-size: 2.4685714286em;
   }
-  p .katex .sizing.reset-size3.size10,
-  p .katex .fontsize-ensurer.reset-size3.size10 {
+  .kalam .katex .sizing.reset-size3.size10,
+  .kalam .katex .fontsize-ensurer.reset-size3.size10 {
     /* stylelint-disable-next-line */
     font-size: 2.9628571429em;
   }
-  p .katex .sizing.reset-size3.size11,
-  p .katex .fontsize-ensurer.reset-size3.size11 {
+  .kalam .katex .sizing.reset-size3.size11,
+  .kalam .katex .fontsize-ensurer.reset-size3.size11 {
     /* stylelint-disable-next-line */
     font-size: 3.5542857143em;
   }
-  p .katex .sizing.reset-size4.size1,
-  p .katex .fontsize-ensurer.reset-size4.size1 {
+  .kalam .katex .sizing.reset-size4.size1,
+  .kalam .katex .fontsize-ensurer.reset-size4.size1 {
     /* stylelint-disable-next-line */
     font-size: 0.625em;
   }
-  p .katex .sizing.reset-size4.size2,
-  p .katex .fontsize-ensurer.reset-size4.size2 {
+  .kalam .katex .sizing.reset-size4.size2,
+  .kalam .katex .fontsize-ensurer.reset-size4.size2 {
     /* stylelint-disable-next-line */
     font-size: 0.75em;
   }
-  p .katex .sizing.reset-size4.size3,
-  p .katex .fontsize-ensurer.reset-size4.size3 {
+  .kalam .katex .sizing.reset-size4.size3,
+  .kalam .katex .fontsize-ensurer.reset-size4.size3 {
     /* stylelint-disable-next-line */
     font-size: 0.875em;
   }
-  p .katex .sizing.reset-size4.size4,
-  p .katex .fontsize-ensurer.reset-size4.size4 {
+  .kalam .katex .sizing.reset-size4.size4,
+  .kalam .katex .fontsize-ensurer.reset-size4.size4 {
     /* stylelint-disable-next-line */
     font-size: 1em;
   }
-  p .katex .sizing.reset-size4.size5,
-  p .katex .fontsize-ensurer.reset-size4.size5 {
+  .kalam .katex .sizing.reset-size4.size5,
+  .kalam .katex .fontsize-ensurer.reset-size4.size5 {
     /* stylelint-disable-next-line */
     font-size: 1.125em;
   }
-  p .katex .sizing.reset-size4.size6,
-  p .katex .fontsize-ensurer.reset-size4.size6 {
+  .kalam .katex .sizing.reset-size4.size6,
+  .kalam .katex .fontsize-ensurer.reset-size4.size6 {
     /* stylelint-disable-next-line */
     font-size: 1.25em;
   }
-  p .katex .sizing.reset-size4.size7,
-  p .katex .fontsize-ensurer.reset-size4.size7 {
+  .kalam .katex .sizing.reset-size4.size7,
+  .kalam .katex .fontsize-ensurer.reset-size4.size7 {
     /* stylelint-disable-next-line */
     font-size: 1.5em;
   }
-  p .katex .sizing.reset-size4.size8,
-  p .katex .fontsize-ensurer.reset-size4.size8 {
+  .kalam .katex .sizing.reset-size4.size8,
+  .kalam .katex .fontsize-ensurer.reset-size4.size8 {
     /* stylelint-disable-next-line */
     font-size: 1.8em;
   }
-  p .katex .sizing.reset-size4.size9,
-  p .katex .fontsize-ensurer.reset-size4.size9 {
+  .kalam .katex .sizing.reset-size4.size9,
+  .kalam .katex .fontsize-ensurer.reset-size4.size9 {
     /* stylelint-disable-next-line */
     font-size: 2.16em;
   }
-  p .katex .sizing.reset-size4.size10,
-  p .katex .fontsize-ensurer.reset-size4.size10 {
+  .kalam .katex .sizing.reset-size4.size10,
+  .kalam .katex .fontsize-ensurer.reset-size4.size10 {
     /* stylelint-disable-next-line */
     font-size: 2.5925em;
   }
-  p .katex .sizing.reset-size4.size11,
-  p .katex .fontsize-ensurer.reset-size4.size11 {
+  .kalam .katex .sizing.reset-size4.size11,
+  .kalam .katex .fontsize-ensurer.reset-size4.size11 {
     /* stylelint-disable-next-line */
     font-size: 3.11em;
   }
-  p .katex .sizing.reset-size5.size1,
-  p .katex .fontsize-ensurer.reset-size5.size1 {
+  .kalam .katex .sizing.reset-size5.size1,
+  .kalam .katex .fontsize-ensurer.reset-size5.size1 {
     /* stylelint-disable-next-line */
     font-size: 0.5555555556em;
   }
-  p .katex .sizing.reset-size5.size2,
-  p .katex .fontsize-ensurer.reset-size5.size2 {
+  .kalam .katex .sizing.reset-size5.size2,
+  .kalam .katex .fontsize-ensurer.reset-size5.size2 {
     /* stylelint-disable-next-line */
     font-size: 0.6666666667em;
   }
-  p .katex .sizing.reset-size5.size3,
-  p .katex .fontsize-ensurer.reset-size5.size3 {
+  .kalam .katex .sizing.reset-size5.size3,
+  .kalam .katex .fontsize-ensurer.reset-size5.size3 {
     /* stylelint-disable-next-line */
     font-size: 0.7777777778em;
   }
-  p .katex .sizing.reset-size5.size4,
-  p .katex .fontsize-ensurer.reset-size5.size4 {
+  .kalam .katex .sizing.reset-size5.size4,
+  .kalam .katex .fontsize-ensurer.reset-size5.size4 {
     /* stylelint-disable-next-line */
     font-size: 0.8888888889em;
   }
-  p .katex .sizing.reset-size5.size5,
-  p .katex .fontsize-ensurer.reset-size5.size5 {
+  .kalam .katex .sizing.reset-size5.size5,
+  .kalam .katex .fontsize-ensurer.reset-size5.size5 {
     /* stylelint-disable-next-line */
     font-size: 1em;
   }
-  p .katex .sizing.reset-size5.size6,
-  p .katex .fontsize-ensurer.reset-size5.size6 {
+  .kalam .katex .sizing.reset-size5.size6,
+  .kalam .katex .fontsize-ensurer.reset-size5.size6 {
     /* stylelint-disable-next-line */
     font-size: 1.1111111111em;
   }
-  p .katex .sizing.reset-size5.size7,
-  p .katex .fontsize-ensurer.reset-size5.size7 {
+  .kalam .katex .sizing.reset-size5.size7,
+  .kalam .katex .fontsize-ensurer.reset-size5.size7 {
     /* stylelint-disable-next-line */
     font-size: 1.3333333333em;
   }
-  p .katex .sizing.reset-size5.size8,
-  p .katex .fontsize-ensurer.reset-size5.size8 {
+  .kalam .katex .sizing.reset-size5.size8,
+  .kalam .katex .fontsize-ensurer.reset-size5.size8 {
     /* stylelint-disable-next-line */
     font-size: 1.6em;
   }
-  p .katex .sizing.reset-size5.size9,
-  p .katex .fontsize-ensurer.reset-size5.size9 {
+  .kalam .katex .sizing.reset-size5.size9,
+  .kalam .katex .fontsize-ensurer.reset-size5.size9 {
     /* stylelint-disable-next-line */
     font-size: 1.92em;
   }
-  p .katex .sizing.reset-size5.size10,
-  p .katex .fontsize-ensurer.reset-size5.size10 {
+  .kalam .katex .sizing.reset-size5.size10,
+  .kalam .katex .fontsize-ensurer.reset-size5.size10 {
     /* stylelint-disable-next-line */
     font-size: 2.3044444444em;
   }
-  p .katex .sizing.reset-size5.size11,
-  p .katex .fontsize-ensurer.reset-size5.size11 {
+  .kalam .katex .sizing.reset-size5.size11,
+  .kalam .katex .fontsize-ensurer.reset-size5.size11 {
     /* stylelint-disable-next-line */
     font-size: 2.7644444444em;
   }
-  p .katex .sizing.reset-size6.size1,
-  p .katex .fontsize-ensurer.reset-size6.size1 {
+  .kalam .katex .sizing.reset-size6.size1,
+  .kalam .katex .fontsize-ensurer.reset-size6.size1 {
     /* stylelint-disable-next-line */
     font-size: 0.5em;
   }
-  p .katex .sizing.reset-size6.size2,
-  p .katex .fontsize-ensurer.reset-size6.size2 {
+  .kalam .katex .sizing.reset-size6.size2,
+  .kalam .katex .fontsize-ensurer.reset-size6.size2 {
     /* stylelint-disable-next-line */
     font-size: 0.6em;
   }
-  p .katex .sizing.reset-size6.size3,
-  p .katex .fontsize-ensurer.reset-size6.size3 {
+  .kalam .katex .sizing.reset-size6.size3,
+  .kalam .katex .fontsize-ensurer.reset-size6.size3 {
     /* stylelint-disable-next-line */
     font-size: 0.7em;
   }
-  p .katex .sizing.reset-size6.size4,
-  p .katex .fontsize-ensurer.reset-size6.size4 {
+  .kalam .katex .sizing.reset-size6.size4,
+  .kalam .katex .fontsize-ensurer.reset-size6.size4 {
     /* stylelint-disable-next-line */
     font-size: 0.8em;
   }
-  p .katex .sizing.reset-size6.size5,
-  p .katex .fontsize-ensurer.reset-size6.size5 {
+  .kalam .katex .sizing.reset-size6.size5,
+  .kalam .katex .fontsize-ensurer.reset-size6.size5 {
     /* stylelint-disable-next-line */
     font-size: 0.9em;
   }
-  p .katex .sizing.reset-size6.size6,
-  p .katex .fontsize-ensurer.reset-size6.size6 {
+  .kalam .katex .sizing.reset-size6.size6,
+  .kalam .katex .fontsize-ensurer.reset-size6.size6 {
     /* stylelint-disable-next-line */
     font-size: 1em;
   }
-  p .katex .sizing.reset-size6.size7,
-  p .katex .fontsize-ensurer.reset-size6.size7 {
+  .kalam .katex .sizing.reset-size6.size7,
+  .kalam .katex .fontsize-ensurer.reset-size6.size7 {
     /* stylelint-disable-next-line */
     font-size: 1.2em;
   }
-  p .katex .sizing.reset-size6.size8,
-  p .katex .fontsize-ensurer.reset-size6.size8 {
+  .kalam .katex .sizing.reset-size6.size8,
+  .kalam .katex .fontsize-ensurer.reset-size6.size8 {
     /* stylelint-disable-next-line */
     font-size: 1.44em;
   }
-  p .katex .sizing.reset-size6.size9,
-  p .katex .fontsize-ensurer.reset-size6.size9 {
+  .kalam .katex .sizing.reset-size6.size9,
+  .kalam .katex .fontsize-ensurer.reset-size6.size9 {
     /* stylelint-disable-next-line */
     font-size: 1.728em;
   }
-  p .katex .sizing.reset-size6.size10,
-  p .katex .fontsize-ensurer.reset-size6.size10 {
+  .kalam .katex .sizing.reset-size6.size10,
+  .kalam .katex .fontsize-ensurer.reset-size6.size10 {
     /* stylelint-disable-next-line */
     font-size: 2.074em;
   }
-  p .katex .sizing.reset-size6.size11,
-  p .katex .fontsize-ensurer.reset-size6.size11 {
+  .kalam .katex .sizing.reset-size6.size11,
+  .kalam .katex .fontsize-ensurer.reset-size6.size11 {
     /* stylelint-disable-next-line */
     font-size: 2.488em;
   }
-  p .katex .sizing.reset-size7.size1,
-  p .katex .fontsize-ensurer.reset-size7.size1 {
+  .kalam .katex .sizing.reset-size7.size1,
+  .kalam .katex .fontsize-ensurer.reset-size7.size1 {
     /* stylelint-disable-next-line */
     font-size: 0.4166666667em;
   }
-  p .katex .sizing.reset-size7.size2,
-  p .katex .fontsize-ensurer.reset-size7.size2 {
+  .kalam .katex .sizing.reset-size7.size2,
+  .kalam .katex .fontsize-ensurer.reset-size7.size2 {
     /* stylelint-disable-next-line */
     font-size: 0.5em;
   }
-  p .katex .sizing.reset-size7.size3,
-  p .katex .fontsize-ensurer.reset-size7.size3 {
+  .kalam .katex .sizing.reset-size7.size3,
+  .kalam .katex .fontsize-ensurer.reset-size7.size3 {
     /* stylelint-disable-next-line */
     font-size: 0.5833333333em;
   }
-  p .katex .sizing.reset-size7.size4,
-  p .katex .fontsize-ensurer.reset-size7.size4 {
+  .kalam .katex .sizing.reset-size7.size4,
+  .kalam .katex .fontsize-ensurer.reset-size7.size4 {
     /* stylelint-disable-next-line */
     font-size: 0.6666666667em;
   }
-  p .katex .sizing.reset-size7.size5,
-  p .katex .fontsize-ensurer.reset-size7.size5 {
+  .kalam .katex .sizing.reset-size7.size5,
+  .kalam .katex .fontsize-ensurer.reset-size7.size5 {
     /* stylelint-disable-next-line */
     font-size: 0.75em;
   }
-  p .katex .sizing.reset-size7.size6,
-  p .katex .fontsize-ensurer.reset-size7.size6 {
+  .kalam .katex .sizing.reset-size7.size6,
+  .kalam .katex .fontsize-ensurer.reset-size7.size6 {
     /* stylelint-disable-next-line */
     font-size: 0.8333333333em;
   }
-  p .katex .sizing.reset-size7.size7,
-  p .katex .fontsize-ensurer.reset-size7.size7 {
+  .kalam .katex .sizing.reset-size7.size7,
+  .kalam .katex .fontsize-ensurer.reset-size7.size7 {
     /* stylelint-disable-next-line */
     font-size: 1em;
   }
-  p .katex .sizing.reset-size7.size8,
-  p .katex .fontsize-ensurer.reset-size7.size8 {
+  .kalam .katex .sizing.reset-size7.size8,
+  .kalam .katex .fontsize-ensurer.reset-size7.size8 {
     /* stylelint-disable-next-line */
     font-size: 1.2em;
   }
-  p .katex .sizing.reset-size7.size9,
-  p .katex .fontsize-ensurer.reset-size7.size9 {
+  .kalam .katex .sizing.reset-size7.size9,
+  .kalam .katex .fontsize-ensurer.reset-size7.size9 {
     /* stylelint-disable-next-line */
     font-size: 1.44em;
   }
-  p .katex .sizing.reset-size7.size10,
-  p .katex .fontsize-ensurer.reset-size7.size10 {
+  .kalam .katex .sizing.reset-size7.size10,
+  .kalam .katex .fontsize-ensurer.reset-size7.size10 {
     /* stylelint-disable-next-line */
     font-size: 1.7283333333em;
   }
-  p .katex .sizing.reset-size7.size11,
-  p .katex .fontsize-ensurer.reset-size7.size11 {
+  .kalam .katex .sizing.reset-size7.size11,
+  .kalam .katex .fontsize-ensurer.reset-size7.size11 {
     /* stylelint-disable-next-line */
     font-size: 2.0733333333em;
   }
-  p .katex .sizing.reset-size8.size1,
-  p .katex .fontsize-ensurer.reset-size8.size1 {
+  .kalam .katex .sizing.reset-size8.size1,
+  .kalam .katex .fontsize-ensurer.reset-size8.size1 {
     /* stylelint-disable-next-line */
     font-size: 0.3472222222em;
   }
-  p .katex .sizing.reset-size8.size2,
-  p .katex .fontsize-ensurer.reset-size8.size2 {
+  .kalam .katex .sizing.reset-size8.size2,
+  .kalam .katex .fontsize-ensurer.reset-size8.size2 {
     /* stylelint-disable-next-line */
     font-size: 0.4166666667em;
   }
-  p .katex .sizing.reset-size8.size3,
-  p .katex .fontsize-ensurer.reset-size8.size3 {
+  .kalam .katex .sizing.reset-size8.size3,
+  .kalam .katex .fontsize-ensurer.reset-size8.size3 {
     /* stylelint-disable-next-line */
     font-size: 0.4861111111em;
   }
-  p .katex .sizing.reset-size8.size4,
-  p .katex .fontsize-ensurer.reset-size8.size4 {
+  .kalam .katex .sizing.reset-size8.size4,
+  .kalam .katex .fontsize-ensurer.reset-size8.size4 {
     /* stylelint-disable-next-line */
     font-size: 0.5555555556em;
   }
-  p .katex .sizing.reset-size8.size5,
-  p .katex .fontsize-ensurer.reset-size8.size5 {
+  .kalam .katex .sizing.reset-size8.size5,
+  .kalam .katex .fontsize-ensurer.reset-size8.size5 {
     /* stylelint-disable-next-line */
     font-size: 0.625em;
   }
-  p .katex .sizing.reset-size8.size6,
-  p .katex .fontsize-ensurer.reset-size8.size6 {
+  .kalam .katex .sizing.reset-size8.size6,
+  .kalam .katex .fontsize-ensurer.reset-size8.size6 {
     /* stylelint-disable-next-line */
     font-size: 0.6944444444em;
   }
-  p .katex .sizing.reset-size8.size7,
-  p .katex .fontsize-ensurer.reset-size8.size7 {
+  .kalam .katex .sizing.reset-size8.size7,
+  .kalam .katex .fontsize-ensurer.reset-size8.size7 {
     /* stylelint-disable-next-line */
     font-size: 0.8333333333em;
   }
-  p .katex .sizing.reset-size8.size8,
-  p .katex .fontsize-ensurer.reset-size8.size8 {
+  .kalam .katex .sizing.reset-size8.size8,
+  .kalam .katex .fontsize-ensurer.reset-size8.size8 {
     /* stylelint-disable-next-line */
     font-size: 1em;
   }
-  p .katex .sizing.reset-size8.size9,
-  p .katex .fontsize-ensurer.reset-size8.size9 {
+  .kalam .katex .sizing.reset-size8.size9,
+  .kalam .katex .fontsize-ensurer.reset-size8.size9 {
     /* stylelint-disable-next-line */
     font-size: 1.2em;
   }
-  p .katex .sizing.reset-size8.size10,
-  p .katex .fontsize-ensurer.reset-size8.size10 {
+  .kalam .katex .sizing.reset-size8.size10,
+  .kalam .katex .fontsize-ensurer.reset-size8.size10 {
     /* stylelint-disable-next-line */
     font-size: 1.4402777778em;
   }
-  p .katex .sizing.reset-size8.size11,
-  p .katex .fontsize-ensurer.reset-size8.size11 {
+  .kalam .katex .sizing.reset-size8.size11,
+  .kalam .katex .fontsize-ensurer.reset-size8.size11 {
     /* stylelint-disable-next-line */
     font-size: 1.7277777778em;
   }
-  p .katex .sizing.reset-size9.size1,
-  p .katex .fontsize-ensurer.reset-size9.size1 {
+  .kalam .katex .sizing.reset-size9.size1,
+  .kalam .katex .fontsize-ensurer.reset-size9.size1 {
     /* stylelint-disable-next-line */
     font-size: 0.2893518519em;
   }
-  p .katex .sizing.reset-size9.size2,
-  p .katex .fontsize-ensurer.reset-size9.size2 {
+  .kalam .katex .sizing.reset-size9.size2,
+  .kalam .katex .fontsize-ensurer.reset-size9.size2 {
     /* stylelint-disable-next-line */
     font-size: 0.3472222222em;
   }
-  p .katex .sizing.reset-size9.size3,
-  p .katex .fontsize-ensurer.reset-size9.size3 {
+  .kalam .katex .sizing.reset-size9.size3,
+  .kalam .katex .fontsize-ensurer.reset-size9.size3 {
     /* stylelint-disable-next-line */
     font-size: 0.4050925926em;
   }
-  p .katex .sizing.reset-size9.size4,
-  p .katex .fontsize-ensurer.reset-size9.size4 {
+  .kalam .katex .sizing.reset-size9.size4,
+  .kalam .katex .fontsize-ensurer.reset-size9.size4 {
     /* stylelint-disable-next-line */
     font-size: 0.462962963em;
   }
-  p .katex .sizing.reset-size9.size5,
-  p .katex .fontsize-ensurer.reset-size9.size5 {
+  .kalam .katex .sizing.reset-size9.size5,
+  .kalam .katex .fontsize-ensurer.reset-size9.size5 {
     /* stylelint-disable-next-line */
     font-size: 0.5208333333em;
   }
-  p .katex .sizing.reset-size9.size6,
-  p .katex .fontsize-ensurer.reset-size9.size6 {
+  .kalam .katex .sizing.reset-size9.size6,
+  .kalam .katex .fontsize-ensurer.reset-size9.size6 {
     /* stylelint-disable-next-line */
     font-size: 0.5787037037em;
   }
-  p .katex .sizing.reset-size9.size7,
-  p .katex .fontsize-ensurer.reset-size9.size7 {
+  .kalam .katex .sizing.reset-size9.size7,
+  .kalam .katex .fontsize-ensurer.reset-size9.size7 {
     /* stylelint-disable-next-line */
     font-size: 0.6944444444em;
   }
-  p .katex .sizing.reset-size9.size8,
-  p .katex .fontsize-ensurer.reset-size9.size8 {
+  .kalam .katex .sizing.reset-size9.size8,
+  .kalam .katex .fontsize-ensurer.reset-size9.size8 {
     /* stylelint-disable-next-line */
     font-size: 0.8333333333em;
   }
-  p .katex .sizing.reset-size9.size9,
-  p .katex .fontsize-ensurer.reset-size9.size9 {
+  .kalam .katex .sizing.reset-size9.size9,
+  .kalam .katex .fontsize-ensurer.reset-size9.size9 {
     /* stylelint-disable-next-line */
     font-size: 1em;
   }
-  p .katex .sizing.reset-size9.size10,
-  p .katex .fontsize-ensurer.reset-size9.size10 {
+  .kalam .katex .sizing.reset-size9.size10,
+  .kalam .katex .fontsize-ensurer.reset-size9.size10 {
     /* stylelint-disable-next-line */
     font-size: 1.2002314815em;
   }
-  p .katex .sizing.reset-size9.size11,
-  p .katex .fontsize-ensurer.reset-size9.size11 {
+  .kalam .katex .sizing.reset-size9.size11,
+  .kalam .katex .fontsize-ensurer.reset-size9.size11 {
     /* stylelint-disable-next-line */
     font-size: 1.4398148148em;
   }
-  p .katex .sizing.reset-size10.size1,
-  p .katex .fontsize-ensurer.reset-size10.size1 {
+  .kalam .katex .sizing.reset-size10.size1,
+  .kalam .katex .fontsize-ensurer.reset-size10.size1 {
     /* stylelint-disable-next-line */
     font-size: 0.2410800386em;
   }
-  p .katex .sizing.reset-size10.size2,
-  p .katex .fontsize-ensurer.reset-size10.size2 {
+  .kalam .katex .sizing.reset-size10.size2,
+  .kalam .katex .fontsize-ensurer.reset-size10.size2 {
     /* stylelint-disable-next-line */
     font-size: 0.2892960463em;
   }
-  p .katex .sizing.reset-size10.size3,
-  p .katex .fontsize-ensurer.reset-size10.size3 {
+  .kalam .katex .sizing.reset-size10.size3,
+  .kalam .katex .fontsize-ensurer.reset-size10.size3 {
     /* stylelint-disable-next-line */
     font-size: 0.337512054em;
   }
-  p .katex .sizing.reset-size10.size4,
-  p .katex .fontsize-ensurer.reset-size10.size4 {
+  .kalam .katex .sizing.reset-size10.size4,
+  .kalam .katex .fontsize-ensurer.reset-size10.size4 {
     /* stylelint-disable-next-line */
     font-size: 0.3857280617em;
   }
-  p .katex .sizing.reset-size10.size5,
-  p .katex .fontsize-ensurer.reset-size10.size5 {
+  .kalam .katex .sizing.reset-size10.size5,
+  .kalam .katex .fontsize-ensurer.reset-size10.size5 {
     /* stylelint-disable-next-line */
     font-size: 0.4339440694em;
   }
-  p .katex .sizing.reset-size10.size6,
-  p .katex .fontsize-ensurer.reset-size10.size6 {
+  .kalam .katex .sizing.reset-size10.size6,
+  .kalam .katex .fontsize-ensurer.reset-size10.size6 {
     /* stylelint-disable-next-line */
     font-size: 0.4821600771em;
   }
-  p .katex .sizing.reset-size10.size7,
-  p .katex .fontsize-ensurer.reset-size10.size7 {
+  .kalam .katex .sizing.reset-size10.size7,
+  .kalam .katex .fontsize-ensurer.reset-size10.size7 {
     /* stylelint-disable-next-line */
     font-size: 0.5785920926em;
   }
-  p .katex .sizing.reset-size10.size8,
-  p .katex .fontsize-ensurer.reset-size10.size8 {
+  .kalam .katex .sizing.reset-size10.size8,
+  .kalam .katex .fontsize-ensurer.reset-size10.size8 {
     /* stylelint-disable-next-line */
     font-size: 0.6943105111em;
   }
-  p .katex .sizing.reset-size10.size9,
-  p .katex .fontsize-ensurer.reset-size10.size9 {
+  .kalam .katex .sizing.reset-size10.size9,
+  .kalam .katex .fontsize-ensurer.reset-size10.size9 {
     /* stylelint-disable-next-line */
     font-size: 0.8331726133em;
   }
-  p .katex .sizing.reset-size10.size10,
-  p .katex .fontsize-ensurer.reset-size10.size10 {
+  .kalam .katex .sizing.reset-size10.size10,
+  .kalam .katex .fontsize-ensurer.reset-size10.size10 {
     /* stylelint-disable-next-line */
     font-size: 1em;
   }
-  p .katex .sizing.reset-size10.size11,
-  p .katex .fontsize-ensurer.reset-size10.size11 {
+  .kalam .katex .sizing.reset-size10.size11,
+  .kalam .katex .fontsize-ensurer.reset-size10.size11 {
     /* stylelint-disable-next-line */
     font-size: 1.1996142719em;
   }
-  p .katex .sizing.reset-size11.size1,
-  p .katex .fontsize-ensurer.reset-size11.size1 {
+  .kalam .katex .sizing.reset-size11.size1,
+  .kalam .katex .fontsize-ensurer.reset-size11.size1 {
     /* stylelint-disable-next-line */
     font-size: 0.2009646302em;
   }
-  p .katex .sizing.reset-size11.size2,
-  p .katex .fontsize-ensurer.reset-size11.size2 {
+  .kalam .katex .sizing.reset-size11.size2,
+  .kalam .katex .fontsize-ensurer.reset-size11.size2 {
     /* stylelint-disable-next-line */
     font-size: 0.2411575563em;
   }
-  p .katex .sizing.reset-size11.size3,
-  p .katex .fontsize-ensurer.reset-size11.size3 {
+  .kalam .katex .sizing.reset-size11.size3,
+  .kalam .katex .fontsize-ensurer.reset-size11.size3 {
     /* stylelint-disable-next-line */
     font-size: 0.2813504823em;
   }
-  p .katex .sizing.reset-size11.size4,
-  p .katex .fontsize-ensurer.reset-size11.size4 {
+  .kalam .katex .sizing.reset-size11.size4,
+  .kalam .katex .fontsize-ensurer.reset-size11.size4 {
     /* stylelint-disable-next-line */
     font-size: 0.3215434084em;
   }
-  p .katex .sizing.reset-size11.size5,
-  p .katex .fontsize-ensurer.reset-size11.size5 {
+  .kalam .katex .sizing.reset-size11.size5,
+  .kalam .katex .fontsize-ensurer.reset-size11.size5 {
     /* stylelint-disable-next-line */
     font-size: 0.3617363344em;
   }
-  p .katex .sizing.reset-size11.size6,
-  p .katex .fontsize-ensurer.reset-size11.size6 {
+  .kalam .katex .sizing.reset-size11.size6,
+  .kalam .katex .fontsize-ensurer.reset-size11.size6 {
     /* stylelint-disable-next-line */
     font-size: 0.4019292605em;
   }
-  p .katex .sizing.reset-size11.size7,
-  p .katex .fontsize-ensurer.reset-size11.size7 {
+  .kalam .katex .sizing.reset-size11.size7,
+  .kalam .katex .fontsize-ensurer.reset-size11.size7 {
     /* stylelint-disable-next-line */
     font-size: 0.4823151125em;
   }
-  p .katex .sizing.reset-size11.size8,
-  p .katex .fontsize-ensurer.reset-size11.size8 {
+  .kalam .katex .sizing.reset-size11.size8,
+  .kalam .katex .fontsize-ensurer.reset-size11.size8 {
     /* stylelint-disable-next-line */
     font-size: 0.578778135em;
   }
-  p .katex .sizing.reset-size11.size9,
-  p .katex .fontsize-ensurer.reset-size11.size9 {
+  .kalam .katex .sizing.reset-size11.size9,
+  .kalam .katex .fontsize-ensurer.reset-size11.size9 {
     /* stylelint-disable-next-line */
     font-size: 0.6945337621em;
   }
-  p .katex .sizing.reset-size11.size10,
-  p .katex .fontsize-ensurer.reset-size11.size10 {
+  .kalam .katex .sizing.reset-size11.size10,
+  .kalam .katex .fontsize-ensurer.reset-size11.size10 {
     /* stylelint-disable-next-line */
     font-size: 0.8336012862em;
   }
-  p .katex .sizing.reset-size11.size11,
-  p .katex .fontsize-ensurer.reset-size11.size11 {
+  .kalam .katex .sizing.reset-size11.size11,
+  .kalam .katex .fontsize-ensurer.reset-size11.size11 {
     /* stylelint-disable-next-line */
     font-size: 1em;
   }
-  p .katex .delimsizing.size1 {
+  .kalam .katex .delimsizing.size1 {
     /* font-family: KaTeX_Size1; */ font-family: Kalam, cursive;
   }
-  p .katex .delimsizing.size2 {
+  .kalam .katex .delimsizing.size2 {
     /* font-family: KaTeX_Size2; */ font-family: Kalam, cursive;
   }
-  p .katex .delimsizing.size3 {
+  .kalam .katex .delimsizing.size3 {
     /* font-family: KaTeX_Size3; */ font-family: Kalam, cursive;
   }
-  p .katex .delimsizing.size4 {
+  .kalam .katex .delimsizing.size4 {
     /* font-family: KaTeX_Size4; */ font-family: Kalam, cursive;
   }
-  p .katex .delimsizing.mult .delim-size1 > span {
+  .kalam .katex .delimsizing.mult .delim-size1 > span {
     /* font-family: KaTeX_Size1; */ font-family: Kalam, cursive;
   }
-  p .katex .delimsizing.mult .delim-size4 > span {
+  .kalam .katex .delimsizing.mult .delim-size4 > span {
     /* font-family: KaTeX_Size4; */ font-family: Kalam, cursive;
   }
-  p .katex .nulldelimiter {
+  .kalam .katex .nulldelimiter {
     display: inline-block;
     width: 0.12em;
   }
-  p .katex .delimcenter {
+  .kalam .katex .delimcenter {
     position: relative;
   }
-  p .katex .op-symbol {
+  .kalam .katex .op-symbol {
     position: relative;
   }
-  p .katex .op-symbol.small-op {
+  .kalam .katex .op-symbol.small-op {
     /* font-family: KaTeX_Size1; */ font-family: Kalam, cursive;
   }
-  p .katex .op-symbol.large-op {
+  .kalam .katex .op-symbol.large-op {
     /* font-family: KaTeX_Size2; */ font-family: Kalam, cursive;
   }
-  p .katex .op-limits > .vlist-t {
+  .kalam .katex .op-limits > .vlist-t {
     text-align: center;
   }
-  p .katex .accent > .vlist-t {
+  .kalam .katex .accent > .vlist-t {
     text-align: center;
   }
-  p .katex .accent .accent-body {
+  .kalam .katex .accent .accent-body {
     position: relative;
   }
-  p .katex .accent .accent-body:not(.accent-full) {
+  .kalam .katex .accent .accent-body:not(.accent-full) {
     width: 0;
   }
-  p .katex .overlay {
+  .kalam .katex .overlay {
     display: block;
   }
-  p .katex .mtable .vertical-separator {
+  .kalam .katex .mtable .vertical-separator {
     display: inline-block;
     min-width: 1px;
   }
-  p .katex .mtable .arraycolsep {
+  .kalam .katex .mtable .arraycolsep {
     display: inline-block;
   }
-  p .katex .mtable .col-align-c > .vlist-t {
+  .kalam .katex .mtable .col-align-c > .vlist-t {
     text-align: center;
   }
-  p .katex .mtable .col-align-l > .vlist-t {
+  .kalam .katex .mtable .col-align-l > .vlist-t {
     text-align: left;
   }
-  p .katex .mtable .col-align-r > .vlist-t {
+  .kalam .katex .mtable .col-align-r > .vlist-t {
     text-align: right;
   }
-  p .katex .svg-align {
+  .kalam .katex .svg-align {
     text-align: left;
   }
-  p .katex svg {
+  .kalam .katex svg {
     display: block;
     position: absolute;
     width: 100%;
@@ -1055,121 +1055,121 @@
     stroke-dashoffset: 0;
     stroke-opacity: 1;
   }
-  p .katex svg path {
+  .kalam .katex svg path {
     stroke: none;
   }
-  p .katex img {
+  .kalam .katex img {
     border-style: none;
     min-width: 0;
     min-height: 0;
     max-width: none;
     max-height: none;
   }
-  p .katex .stretchy {
+  .kalam .katex .stretchy {
     width: 100%;
     display: block;
     position: relative;
     overflow: hidden;
   }
-  p .katex .stretchy::before, p .katex .stretchy::after {
+  .kalam .katex .stretchy::before, .kalam .katex .stretchy::after {
     content: "";
   }
-  p .katex .hide-tail {
+  .kalam .katex .hide-tail {
     width: 100%;
     position: relative;
     overflow: hidden;
   }
-  p .katex .halfarrow-left {
+  .kalam .katex .halfarrow-left {
     position: absolute;
     left: 0;
     width: 50.2%;
     overflow: hidden;
   }
-  p .katex .halfarrow-right {
+  .kalam .katex .halfarrow-right {
     position: absolute;
     right: 0;
     width: 50.2%;
     overflow: hidden;
   }
-  p .katex .brace-left {
+  .kalam .katex .brace-left {
     position: absolute;
     left: 0;
     width: 25.1%;
     overflow: hidden;
   }
-  p .katex .brace-center {
+  .kalam .katex .brace-center {
     position: absolute;
     left: 25%;
     width: 50%;
     overflow: hidden;
   }
-  p .katex .brace-right {
+  .kalam .katex .brace-right {
     position: absolute;
     right: 0;
     width: 25.1%;
     overflow: hidden;
   }
-  p .katex .x-arrow-pad {
+  .kalam .katex .x-arrow-pad {
     padding: 0 0.5em;
   }
-  p .katex .cd-arrow-pad {
+  .kalam .katex .cd-arrow-pad {
     padding: 0 0.55556em 0 0.27778em;
   }
-  p .katex .x-arrow,
-  p .katex .mover,
-  p .katex .munder {
+  .kalam .katex .x-arrow,
+  .kalam .katex .mover,
+  .kalam .katex .munder {
     text-align: center;
   }
-  p .katex .boxpad {
+  .kalam .katex .boxpad {
     padding: 0 0.3em;
   }
-  p .katex .fbox,
-  p .katex .fcolorbox {
+  .kalam .katex .fbox,
+  .kalam .katex .fcolorbox {
     box-sizing: border-box;
     border: 0.04em solid;
   }
-  p .katex .cancel-pad {
+  .kalam .katex .cancel-pad {
     padding: 0 0.2em;
   }
-  p .katex .cancel-lap {
+  .kalam .katex .cancel-lap {
     margin-left: -0.2em;
     margin-right: -0.2em;
   }
-  p .katex .sout {
+  .kalam .katex .sout {
     border-bottom-style: solid;
     border-bottom-width: 0.08em;
   }
-  p .katex .angl {
+  .kalam .katex .angl {
     box-sizing: border-box;
     border-top: 0.049em solid;
     border-right: 0.049em solid;
     margin-right: 0.03889em;
   }
-  p .katex .anglpad {
+  .kalam .katex .anglpad {
     padding: 0 0.03889em;
   }
-  p .katex .eqn-num::before {
+  .kalam .katex .eqn-num::before {
     counter-increment: katexEqnNo;
     content: "(" counter(katexEqnNo) ")";
   }
-  p .katex .mml-eqn-num::before {
+  .kalam .katex .mml-eqn-num::before {
     counter-increment: mmlEqnNo;
     content: "(" counter(mmlEqnNo) ")";
   }
-  p .katex .mtr-glue {
+  .kalam .katex .mtr-glue {
     width: 50%;
   }
-  p .katex .cd-vert-arrow {
+  .kalam .katex .cd-vert-arrow {
     display: inline-block;
     position: relative;
   }
-  p .katex .cd-label-left {
+  .kalam .katex .cd-label-left {
     display: inline-block;
     position: absolute;
     right: calc(50% + 0.3em);
     text-align: left;
   }
-  p .katex .cd-label-right {
+  .kalam .katex .cd-label-right {
     display: inline-block;
     position: absolute;
     left: calc(50% + 0.3em);
@@ -1181,26 +1181,26 @@
     margin: 1em 0;
     text-align: center;
   }
-  .katex-display > p .katex {
+  .katex-display > .kalam .katex {
     display: block;
     text-align: center;
     white-space: nowrap;
   }
-  .katex-display > p .katex > .katex-html {
+  .katex-display > .kalam .katex > .katex-html {
     display: block;
     position: relative;
   }
-  .katex-display > p .katex > .katex-html > .tag {
+  .katex-display > .kalam .katex > .katex-html > .tag {
     position: absolute;
     right: 0;
   }
   
-  .katex-display.leqno > p .katex > .katex-html > .tag {
+  .katex-display.leqno > .kalam .katex > .katex-html > .tag {
     left: 0;
     right: auto;
   }
   
-  .katex-display.fleqn > p .katex {
+  .katex-display.fleqn > .kalam .katex {
     text-align: left;
     padding-left: 2em;
   }

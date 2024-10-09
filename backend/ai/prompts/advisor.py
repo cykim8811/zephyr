@@ -3,12 +3,15 @@ import base64
 from PIL import Image, ImageDraw, ImageFont
 import math
 from io import BytesIO
-from openai import OpenAI
+from openai import AsyncOpenAI
 import dotenv
+import json
 
 dotenv.load_dotenv()
 
-client = OpenAI()
+client = AsyncOpenAI()
+
+padding = 0.1
 
 def preprocess2(image: Image, total_width) -> Image:
     grid_x_num = 10
@@ -49,8 +52,10 @@ system_prompt2 = """
 {process}
 
 # 사용된 스킬
-x = \\ln(t^3 + 1) \\text{를 }t\\text{에 대해 미분하면} \\\\
-\\frac{dx}{dt}=\\frac{3t^2}{t^3+1}
+{skill}
+
+# 텍스트 추정 (정확도 낮음)
+{estimate}
 
 # 지침
 - 답안의 위치를 찾아내고, 스킬을 기반으로 해당 풀이가 올바른지 판단하여라.
@@ -64,9 +69,9 @@ ex) F6, E5, F7, F5, E6
 
 # 예시 출력
 
-### 올바른 풀이일 경우
+- (올바른 풀이일 경우)
 텍스트: 12 - 8 = 4
-위치: C3, B3, B4, F3, C4, D3, E3, E4, D4, F4
+해당 텍스트 위치: C3, B3, B4, F3, C4, D3, E3, E4, D4, F4
 옳은 풀이: 12 - 8 = 4
 오류: 없음
 포맷:
@@ -80,9 +85,9 @@ ex) F6, E5, F7, F5, E6
 </output>
 
 
-### 잘못된 풀이일 경우
+- (잘못된 풀이일 경우)
 텍스트: 8 - 4 * 8 = -24
-위치: D5, C6, E6, D7, C7, D6, C5, E5, E7
+해당 텍스트 위치: D5, C6, E6, D7, C7, D6, C5, E5, E7
 옳은 풀이: 8 - 4 * 7 = -20
 오류: 초항을 잘못 계산함
 포맷:
@@ -97,21 +102,29 @@ ex) F6, E5, F7, F5, E6
 
 """
 
-def parse(problem, images, step):
+from asgiref.sync import sync_to_async
+
+async def parse(problem, images, step):
     # cut images[step["page"]] by step["left"], step["top"], step["right"], step["bottom"]
     # step["~"] is in (0, 1)
+    total_left = max(step["left"] - padding, 0)
+    total_top = max(step["top"] - padding * (images[step["page"]].height / images[step["page"]].width), 0)
+    total_right = min(step["right"] + padding, 1)
+    total_bottom = min(step["bottom"] + padding * (images[step["page"]].height / images[step["page"]].width), 1)
+
     cut_image = images[step["page"]].crop((
-        images[step["page"]].width * (step["left"] - 0.1),
-        images[step["page"]].height * (step["top"] - 0.07),
-        images[step["page"]].width * (step["right"] + 0.1),
-        images[step["page"]].height * (step["bottom"] + 0.07),
+        images[step["page"]].width * total_left,
+        images[step["page"]].height * total_top,
+        images[step["page"]].width * total_right,
+        images[step["page"]].height * total_bottom,
     ))
 
 
     # add grid
     cut_image = preprocess2(cut_image, images[step["page"]].width)
 
-    cut_image.save("cut_image.png")
+    import random
+    cut_image.save(f"temp/{random.randint(10000, 100000 - 1)}.png")
 
     # convert to base64
     buffered = BytesIO()
@@ -120,12 +133,15 @@ def parse(problem, images, step):
     cut_image.save(buffered, format="JPEG")
     res = base64.b64encode(buffered.getvalue()).decode("utf-8")
 
-    response = client.chat.completions.create(
+    problem_skills = json.loads(problem.prompt)
+    used_skills = "\n\n".join([skill for skill in problem_skills if skill in [t.strip() for t in step["skill"].split(",")]])
+
+    response = await client.chat.completions.create(
         model="gpt-4o",
         messages=[
             {
                 "role": "system",
-                "content": system_prompt2.replace("{problem}", problem.text).replace("{process}", step["process"]),
+                "content": system_prompt2.replace("{problem}", problem.text).replace("{process}", step["process"]).replace("{skill}", used_skills).replace("{estimate}", step["equation"]),
             },
             {
                 "role": "user",
@@ -140,8 +156,54 @@ def parse(problem, images, step):
                 ],
             }
         ],
-        max_tokens=500,
+        max_tokens=1000,
     )
 
     print(response.choices[0].message.content)
+
+    # parse response xml
+    data = response.choices[0].message.content
+    data = data[data.find("<output>")+8:data.find("</output>")]
+    import xml.etree.ElementTree as ET
+    root = ET.fromstring(f"<output>{data}</output>")
+
+    left = root.find("left").text
+    top = root.find("top").text
+    right = root.find("right").text
+    bottom = root.find("bottom").text
+
+    left = ord(left) - ord("A")
+    top = int(top) - 1
+    right = ord(right) - ord("A") + 1
+    bottom = int(bottom)
+
+    grid_x_num = 10
+    grid_y_num = math.ceil(images[step["page"]].height / images[step["page"]].width * grid_x_num)
+
+    left = left / grid_x_num
+    top = top / grid_y_num
+    right = right / grid_x_num
+    bottom = bottom / grid_y_num
+
+    print("step", step["left"], step["top"], step["right"], step["bottom"])
+    print("inner", left, top, right, bottom)
+    print("total", total_left, total_top, total_right, total_bottom)
+
+    left = total_left + left * (total_right - total_left)
+    top = total_top + top * (total_right - total_left)
+    right = total_left + right * (total_right - total_left)
+    bottom = total_top + bottom * (total_right - total_left)
+
+    print("final", left, top, right, bottom)
+
+    return {
+        "page": step["page"],
+        "left": left,
+        "top": top,
+        "right": right,
+        "bottom": bottom,
+        "text": root.find("text").text,
+        "error": root.find("error").text,
+    }
+    
 

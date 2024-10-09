@@ -33,17 +33,18 @@ const MainView: React.FC = () => {
         >
             <motion.span
                 className="flex flex-row items-center italic"
+                style={{ fontSize: "1.5em" }}
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
             >
                 <Markdown
-                remarkPlugins={[remarkMath]}
-                rehypePlugins={[rehypeKatex]}
+                    remarkPlugins={[remarkMath]}
+                    rehypePlugins={[rehypeKatex]}
                 >
                 $Z$
                 </Markdown>
-                <span style={{fontSize: "1.05em", marginBottom: "0.4rem"}}>ephyr.</span>
+                <span style={{fontSize: "0.85em", marginBottom: "0.4rem"}}>ephyr.</span>
             </motion.span>
             <motion.div 
                 className="text-lg md:text-2xl lg:text-3xl mt-20 mb-8"

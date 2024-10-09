@@ -16,10 +16,10 @@ interface ProblemCanvasProps {
     setPageData: (pageData: PageData) => void;
     addPageData: (stroke: Stroke) => void;
     setCanvas: (canvas: HTMLCanvasElement) => void;
-    hint: Hint | null;
+    hints: Hint[];
 }
 
-const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType, pageData, setPageData, addPageData, setCanvas, hint }) => {
+const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType, pageData, setPageData, addPageData, setCanvas, hints }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const overlayCanvasRef = useRef<HTMLCanvasElement>(null);
     const eraserDisplayRef = useRef<HTMLDivElement>(null);
@@ -31,25 +31,24 @@ const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType, pageData, setPag
         }
     }, [canvasRef.current]);
 
-    const [hintText, setHintText] = useState<string>('');
 
-    useEffect(() => {
-        setHintText('');
-        (async () => {
-            if (hint === null) return;
-            while (true) {
-                let done = false;
-                setHintText((prev) => {
-                    if (prev.length >= hint.text.length) {
-                        done = true;
-                    }
-                    return hint.text.slice(0, prev.length + 1);
-                });
-                if (done) break;
-                await new Promise((resolve) => setTimeout(resolve, 50));
-            }
-        })();
-    }, [hint]);
+    // useEffect(() => {
+    //     setHintText('');
+    //     (async () => {
+    //         if (hint === null) return;
+    //         while (true) {
+    //             let done = false;
+    //             setHintText((prev) => {
+    //                 if (prev.length >= hint.text.length) {
+    //                     done = true;
+    //                 }
+    //                 return hint.text.slice(0, prev.length + 1);
+    //             });
+    //             if (done) break;
+    //             await new Promise((resolve) => setTimeout(resolve, 50));
+    //         }
+    //     })();
+    // }, [hint]);
     
     return (
         <div className="relative">
@@ -70,41 +69,25 @@ const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType, pageData, setPag
                 />
             }
             {
-                hint && (
-                    <>
-                        <motion.div
-                            key={`${hint.left}-${hint.right}-${hint.top}-${hint.bottom}`}
-                            className="absolute text-transparent decoration-red-600 pointer-events-none select-none overflow-hidden underline decoration-wavy"
-                            style={{
-                                left: window.innerWidth * hint.left,
-                                top: window.innerWidth * 1.5 * hint.bottom - 46,
-                                overflow: 'hidden',
-                                fontSize: '48px',
-                            }}
-                            initial={{ width: 0 }}
-                            animate={{ width: window.innerWidth * (hint.right - hint.left) }}
-                            transition={{ duration: 0.5, ease: 'linear' }}
+                hints.map((hint) =>
+                    <div
+                        key={`${hint.left}-${hint.right}-${hint.top}-${hint.bottom}-container`}
+                        className="absolute border border-gray-300 p-2"
+                        style={{
+                            left: `${hint.left * 100}%`,
+                            right: `${(1 - hint.right) * 100}%`,
+                            top: `${hint.top * 100}%`,
+                            bottom: `${(1 - hint.bottom) * 100}%`,
+                        }}
+                    >
+
+                        <Markdown
+                            remarkPlugins={[remarkMath]}
+                            rehypePlugins={[rehypeKatex]}
                         >
-                            {"aaaaaaaaa".repeat(Math.round((hint.right - hint.left) * 10))}
-                        </motion.div>
-                        <div
-                            key={`${hint.left}-${hint.right}-${hint.top}-${hint.bottom}-text`}
-                            className="absolute p-2 text-red-700 text-3xl word-wrap pointer-events-none select-none break-keep"
-                            style={{
-                                fontFamily: 'Nanum Pen Script, cursive',
-                                left: window.innerWidth * hint.left,
-                                top: window.innerWidth * 1.5 * hint.bottom + 10,
-                                width: window.innerWidth - window.innerWidth * hint.left,
-                            }}
-                        >
-                            <Markdown
-                                remarkPlugins={[remarkMath]}
-                                rehypePlugins={[rehypeKatex]}
-                            >
-                                {hintText}
-                            </Markdown>
-                        </div>
-                    </>
+                            {hint.text}
+                        </Markdown>
+                    </div>
                 )
             }
             <Button

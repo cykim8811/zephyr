@@ -4,3 +4,4 @@ backend/static/
 backend/media/
 backend/image.png
 backend/cut_image.png
+temp/

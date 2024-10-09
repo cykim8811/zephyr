@@ -30,6 +30,7 @@ system_prompt1 = """
 - 학생의 답안을 단계별로 분석하여라.
 - 개별 풀이 단계, 해당하는 스킬, 위치, 텍스트를 기록하여라.
 - 모든 단계를 분석한 후, 이를 XML 형식으로 변환하여라.
+- 하나의 step 은 하나의 식만 포함해야 한다.
 
 # 예시 출력
 
@@ -118,7 +119,6 @@ def save_merged_image(images: List[Image], filename: str):
     for i, image in enumerate(images):
         merged.paste(image, (0, i * height))
     merged.save(filename)
-
 
 def parse(problem, images):
 

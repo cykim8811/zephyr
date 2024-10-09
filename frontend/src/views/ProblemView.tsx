@@ -31,7 +31,7 @@ const ProblemView: React.FC = () => {
     const [problemText, setProblemText] = useState<string>('');
     const canvasRefs = useRef<HTMLCanvasElement[]>([]);
 
-    const [hint, setHint] = useState<Hint | null>(null);
+    const [hints, setHints] = useState<Hint[]>([]);
 
     useEffect(() => {
         if (id === undefined) return;
@@ -78,10 +78,11 @@ const ProblemView: React.FC = () => {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'X-CSRFToken': getCsrfToken(),
-                }
+                },
+                timeout: 300000,
             }
         ).then((response) => {
-            setHint(response.data);
+            setHints(response.data);
         }).catch((e) => {
             alert(e);
         });
@@ -107,7 +108,7 @@ const ProblemView: React.FC = () => {
             </div>
             {Array.from({ length: pageData.length }).map((_, index) => (
                 <ProblemCanvas
-                    key={index} penType={penType} pageData={pageData[index]} hint={hint?.page_id === index ? hint : null}
+                    key={index} penType={penType} pageData={pageData[index]} hints={hints.filter(hint => hint.page_id === index)}
                     setCanvas={(canvas: HTMLCanvasElement) => {
                         canvasRefs.current[index] = canvas;
                     }}
