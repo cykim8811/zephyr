@@ -92,7 +92,7 @@ const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType, pageData, setPag
             }
             <Button
                 variant="ghost"
-                className="absolute right-4 bottom-4 opacity-50"
+                className="absolute left-4 top-4 opacity-50"
                 onClick={() => setPageData({ strokes: [] })}
             >
                 Clear

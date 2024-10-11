@@ -89,15 +89,13 @@ const ProblemView: React.FC = () => {
     }
 
     return (
-        <ScrollArea
-            className="w-screen h-screen bg-gray-200 overflow-y-hidden"
-        >
-            <ArrowLeft
-                size={24}
-                className="absolute left-0 top-0 z-20 m-4 mt-8 inline-block mr-2"
-                onPointerDown={() => navigate('/problem')}
-            />
-            <div className="absolute w-full p-4 bg-white opacity-95 z-10 border-b border-gray-200 pointer-events-none select-none">
+        <div className="w-screen h-screen flex flex-col bg-gray-200 overflow-y-hidden">
+            <div className="w-full p-4 bg-white opacity-95 z-10 border-b border-gray-200 pointer-events-none select-none">
+                <ArrowLeft
+                    size={24}
+                    className="absolute left-0 top-0 z-20 m-4 mt-8 inline-block mr-2"
+                    onPointerDown={() => navigate('/problem')}
+                />
                 <Markdown
                     className="w-fit mx-auto py-4 text-lg"
                     remarkPlugins={[remarkMath]}
@@ -106,43 +104,47 @@ const ProblemView: React.FC = () => {
                     {problemText}
                 </Markdown>
             </div>
-            {Array.from({ length: pageData.length }).map((_, index) => (
-                <ProblemCanvas
-                    key={index} penType={penType} pageData={pageData[index]} hints={hints.filter(hint => hint.page_id === index)}
-                    setCanvas={(canvas: HTMLCanvasElement) => {
-                        canvasRefs.current[index] = canvas;
-                    }}
-                    setPageData={(data) => {
-                        setPageData((pageData) => {
-                            pageData[index] = data;
-                            let lastFilledIndex = pageData.length - 1;
-                            while (lastFilledIndex >= 0 && pageData[lastFilledIndex].strokes.length === 0) lastFilledIndex--;
-                            lastFilledIndex += 2;
-                            const newPageData = pageData.slice(0, lastFilledIndex);
-                            if (id === undefined) return newPageData;
-                            saveToServer(newPageData, id);
-                            return newPageData;
-                        });
-                    }}
-                    addPageData={(stroke) => {
-                        setPageData((pageData) => {
-                            if (id === undefined) return pageData;
-                            if (pageData[pageData.length - 1].strokes.length !== 0) {
-                                pageData[index].strokes.push(stroke);
-                                pageData.push({ strokes: [] });
-                                saveToServer(pageData, id);
-                                return pageData;
-                            } else {
-                                addToServer(stroke, index, id);
-                                return pageData.map((d, i) => i === index ? { strokes: [...d.strokes, stroke] } : d)
-                            }
-                        });
-                    }}
-                />
-            ))}
-            <PenToggle className="absolute right-0 top-0 z-20" penType={penType} onClick={handleToggle} />
-            <AIButton className="absolute right-0 top-20 z-20" onClick={handleAIClick} />
-        </ScrollArea>
+            <ScrollArea
+                className="w-screen bg-gray-200 overflow-y-hidden"
+            >
+                {Array.from({ length: pageData.length }).map((_, index) => (
+                    <ProblemCanvas
+                        key={index} penType={penType} pageData={pageData[index]} hints={hints.filter(hint => hint.page_id === index)}
+                        setCanvas={(canvas: HTMLCanvasElement) => {
+                            canvasRefs.current[index] = canvas;
+                        }}
+                        setPageData={(data) => {
+                            setPageData((pageData) => {
+                                pageData[index] = data;
+                                let lastFilledIndex = pageData.length - 1;
+                                while (lastFilledIndex >= 0 && pageData[lastFilledIndex].strokes.length === 0) lastFilledIndex--;
+                                lastFilledIndex += 2;
+                                const newPageData = pageData.slice(0, lastFilledIndex);
+                                if (id === undefined) return newPageData;
+                                saveToServer(newPageData, id);
+                                return newPageData;
+                            });
+                        }}
+                        addPageData={(stroke) => {
+                            setPageData((pageData) => {
+                                if (id === undefined) return pageData;
+                                if (pageData[pageData.length - 1].strokes.length !== 0) {
+                                    pageData[index].strokes.push(stroke);
+                                    pageData.push({ strokes: [] });
+                                    saveToServer(pageData, id);
+                                    return pageData;
+                                } else {
+                                    addToServer(stroke, index, id);
+                                    return pageData.map((d, i) => i === index ? { strokes: [...d.strokes, stroke] } : d)
+                                }
+                            });
+                        }}
+                    />
+                ))}
+                <PenToggle className="absolute right-0 top-0 z-20" penType={penType} onClick={handleToggle} />
+                <AIButton className="absolute right-0 top-20 z-20" onClick={handleAIClick} />
+            </ScrollArea>
+        </div>
     );
 };
 
