@@ -46,18 +46,18 @@ def request_ai(request):
 
     # print(advices)
 
-    loop.run_until_complete(advisor.parse(problem, images, steps[0], 0))
+    advices = [loop.run_until_complete(advisor.parse(problem, images, steps[0], 0))]
 
-    # return JsonResponse([
-    #     {
-    #         "page_id": advice["page"],
-    #         "left": advice["left"],
-    #         "top": advice["top"],
-    #         "right": advice["right"],
-    #         "bottom": advice["bottom"],
-    #         "text": advice["error"],
-    #     }
-    #     for advice in advices
-    # ], safe=False)
+    return JsonResponse([
+        {
+            "page_id": advice["page"],
+            "left": advice["left"],
+            "top": advice["top"],
+            "right": advice["right"],
+            "bottom": advice["bottom"],
+            "text": advice["error"],
+        }
+        for advice in advices
+    ], safe=False)
 
 

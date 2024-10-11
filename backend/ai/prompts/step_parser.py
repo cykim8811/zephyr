@@ -163,6 +163,7 @@ def parse(problem, images):
             }
         ],
         max_tokens=2000,
+        temperature=0.0,
     )
     print(response.choices[0].message.content)
     print(f"{len(res)} images - {(response.usage.prompt_tokens * 2.5 / 1000000 + response.usage.completion_tokens * 10 / 1000000) * 1348}원")

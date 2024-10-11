@@ -89,14 +89,14 @@ const ProblemView: React.FC = () => {
 
     return (
         <ScrollArea
-            className="w-screen h-screen bg-gray-200 overflow-y-hidden"
+            className="w-screen h-screen bg-white overflow-y-hidden"
         >
             <ArrowLeft
                 size={24}
                 className="absolute left-0 top-0 z-20 m-4 mt-8 inline-block mr-2"
                 onPointerDown={() => navigate('/problem')}
             />
-            <div className="absolute w-full p-4 bg-white opacity-95 z-10 border-b border-gray-200 pointer-events-none select-none">
+            <div className="sticky top-0 w-full p-4 bg-white opacity-95 z-10 border-b border-gray-200 pointer-events-none select-none">
                 <Markdown
                     className="w-fit mx-auto py-4 text-lg"
                     remarkPlugins={[remarkMath]}
