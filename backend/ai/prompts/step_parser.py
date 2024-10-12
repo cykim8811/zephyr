@@ -29,6 +29,7 @@ system_prompt1 = """
 # 지침
 - 학생의 답안을 단계별로 분석하여라.
 - 개별 풀이 단계, 해당하는 스킬, 위치, 텍스트를 기록하여라.
+- 위치는, 해당 풀이 단계의 식과 겹치는 모든 셀의 이름을 나열하여라. 이 때 순서는 상관없다.
 - 분석이 완료된 후, 이를 XML 형식으로 변환하여라.
 - LaTeX 형식을 사용할 때에는, $ 표시 사이에 수식을 넣어야 한다. 예를 들어, $y = x^2$는 y = x^2로 변환되어야 한다.
   이를 지키지 않을 경우, 오류처리되어 즉시 오답처리된다.
@@ -57,6 +58,7 @@ system_prompt1 = """
 <output>
     <step>
         <process>학생은 수열의 8번째 항과 9번째 항으로 공차를 구하고자 함.</process>
+        <formula>$12 - 8 = 4$</formula>
         <skill>Skill A</skill>
         <left>B</left>
         <top>5</top>
@@ -65,6 +67,7 @@ system_prompt1 = """
     </step>
     <step>
         <process>학생은 공차와 8번째 항을 이용하여 초항을 구하고자 함.</process>
+        <formula>$8 - 4 * 7 = -20$</formula>
         <skill>Skill E</skill>
         <left>C</left>
         <top>7</top>
@@ -73,6 +76,7 @@ system_prompt1 = """
     </step>
     <step>
         <process>학생은 초항과 공차를 이용하여 일반항을 구하고자 함.</process>
+        <formula>$a_n = -20 + 4 * (n - 1)$</formula>
         <skill>Skill F</skill>
         <left>A</left>
         <top>11</top>
@@ -187,6 +191,7 @@ def parse(problem, images):
 
         steps.append({
             "process": step.find("process").text,
+            "formula": step.find("formula").text,
             "skill": step.find("skill").text,
             "page_id": page_id,
             "left": left,

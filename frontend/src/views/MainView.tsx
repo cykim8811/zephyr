@@ -26,7 +26,7 @@ const MainView: React.FC = () => {
     }, []);
     return (
         <motion.div
-            className="flex justify-center items-center h-screen text-5xl md:text-7xl lg:text-8xl flex-col" style={{ fontFamily: "Noto Serif"}}
+            className="flex justify-center items-center h-screen text-6xl md:text-8xl lg:text-9xl flex-col" style={{ fontFamily: "Noto Serif"}}
             initial={{ opacity: 1, y: 0 }}
             animate={{ opacity: nextPageTransition ? 0 : 1, y: nextPageTransition ? 20 : 0 }}
             transition={{ duration: 0.5, ease: "easeIn" }}
@@ -37,13 +37,7 @@ const MainView: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
             >
-                <Markdown
-                remarkPlugins={[remarkMath]}
-                rehypePlugins={[rehypeKatex]}
-                >
-                $Z$
-                </Markdown>
-                <span style={{fontSize: "1.05em", marginBottom: "0.4rem"}}>ephyr.</span>
+                <span style={{fontSize: "0.8em", marginBottom: "0.4rem"}}>Zephyr.</span>
             </motion.span>
             <motion.div 
                 className="text-lg md:text-2xl lg:text-3xl mt-20 mb-8"

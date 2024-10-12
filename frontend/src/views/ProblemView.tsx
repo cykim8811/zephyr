@@ -15,6 +15,7 @@ import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
 
 import 'katex/dist/katex.min.css';
+import HintToggle from '@/components/HintToggle';
 
 function dataURLtoBlob(dataURL: string): Blob {
     const byteString = atob(dataURL.split(',')[1]);
@@ -30,6 +31,7 @@ const ProblemView: React.FC = () => {
     const [pageData, setPageData] = useState<PageData[]>([{ strokes: [], }]);
     const [problemText, setProblemText] = useState<string>('');
     const canvasRefs = useRef<HTMLCanvasElement[]>([]);
+    const [showHint, setShowHint] = useState<boolean>(true);
 
     const [hint, setHint] = useState<Hint | null>(null);
 
@@ -87,6 +89,11 @@ const ProblemView: React.FC = () => {
         });
     }
 
+    const handleHintToggle = (e: TouchEvent) => {
+        setShowHint(!showHint);
+        e.preventDefault();
+    }
+
     return (
         <div className="relative flex flex-col w-screen h-full">
             <ArrowLeft
@@ -109,6 +116,7 @@ const ProblemView: React.FC = () => {
                 {Array.from({ length: pageData.length }).map((_, index) => (
                     <ProblemCanvas
                         key={index} penType={penType} pageData={pageData[index]} hint={hint?.page_id === index ? hint : null}
+                        showHint={showHint}
                         setCanvas={(canvas: HTMLCanvasElement) => {
                             canvasRefs.current[index] = canvas;
                         }}
@@ -142,6 +150,7 @@ const ProblemView: React.FC = () => {
                 ))}
                 <PenToggle className="absolute right-0 top-0 z-20" penType={penType} onClick={handleToggle} />
                 <AIButton className="absolute right-0 top-20 z-20" onClick={handleAIClick} />
+                <HintToggle className="absolute right-0 top-40 z-20" showHint={showHint} onClick={handleHintToggle} />
             </ScrollArea>
         </div>
     );

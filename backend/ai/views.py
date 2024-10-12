@@ -4,18 +4,9 @@ from django.http import HttpResponse, JsonResponse
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 
-import json
-import os
-
 from problem.models import Problem
-from user.models import Solution
 
-from PIL import ImageFont
-
-import base64
-from io import BytesIO
-from PIL import Image, ImageDraw
-from typing import List, Dict, Union
+from PIL import Image
 
 from .prompts import step_parser, adviser
 
@@ -46,6 +37,14 @@ def request_ai(request):
         if advice is not None: break
 
     if advice is not None:
+        print({
+            "page_id": advice["page_id"],
+            "left": advice["left"],
+            "top": advice["top"],
+            "right": advice["right"],
+            "bottom": advice["bottom"],
+            "text": advice["advice"],
+        })
         return JsonResponse({
             "page_id": advice["page_id"],
             "left": advice["left"],
@@ -55,4 +54,4 @@ def request_ai(request):
             "text": advice["advice"],
         })
     else:
-        return JsonResponse(None)
+        return JsonResponse(None, safe=False)

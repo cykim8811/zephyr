@@ -17,9 +17,10 @@ interface ProblemCanvasProps {
     addPageData: (stroke: Stroke) => void;
     setCanvas: (canvas: HTMLCanvasElement) => void;
     hint: Hint | null;
+    showHint: boolean;
 }
 
-const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType, pageData, setPageData, addPageData, setCanvas, hint }) => {
+const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType, pageData, setPageData, addPageData, setCanvas, hint, showHint }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const overlayCanvasRef = useRef<HTMLCanvasElement>(null);
     const eraserDisplayRef = useRef<HTMLDivElement>(null);
@@ -78,7 +79,9 @@ const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType, pageData, setPag
             }
             {
                 hint && (
-                    <>
+                    <span className={
+                        showHint ? 'opacity-100' : 'opacity-0'
+                    }>
                         <motion.div
                             key={`${hint.left}-${hint.right}-${hint.top}-${hint.bottom}`}
                             className="absolute pointer-events-none select-none overflow-hidden"
@@ -112,39 +115,41 @@ const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType, pageData, setPag
                                 </div>
                             </div>
                         </motion.div>
-                        <motion.div
-                            key={`${hint.left}-${hint.right}-${hint.top}-${hint.bottom}-textbaaab`}
-                            ref={hintRef}
-                            className="absolute p-8 text-black text-xl word-wrap pointer-events-none select-none break-keep border-2 border-gray-500/80 bg-white/95 rounded-xl opacity-70"
-                            style={{
-                                transform: hintTextAtBottom ?
-                                    `translate(-50%, 120px)` :
-                                    `translate(-50%, ${-(hintRef.current?.offsetHeight ?? 0) - 80}px)`,
-                                transition: 'transform 0.5s',
-                                maxWidth: '80%',
-                                width: 'fit-content',
-                                left: '50vw',
-                                top: hintTextAtBottom ? (hint.bottom * window.innerWidth * 1.414 * 1.1) : (hint.top * window.innerWidth * 1.414),
-                            }}
-                            initial={{
-                                opacity: 0.0,
-                            }}
-                            animate={{
-                                opacity: 1,
-                            }}
-                            transition={{
-                                duration: 0.3,
-                                delay: 0.7,
-                            }}
-                        >
-                            <Markdown
-                                remarkPlugins={[remarkMath]}
-                                rehypePlugins={[rehypeKatex]}
+                        { hintText.length > 2 &&
+                            <motion.div
+                                key={`${hint.left}-${hint.right}-${hint.top}-${hint.bottom}-text`}
+                                ref={hintRef}
+                                className="absolute p-8 text-black text-xl word-wrap pointer-events-none select-none break-keep border-2 border-gray-500/80 bg-white/95 rounded-xl opacity-70"
+                                style={{
+                                    transform: hintTextAtBottom ?
+                                        `translate(-50%, 120px)` :
+                                        `translate(-50%, ${-(hintRef.current?.offsetHeight ?? 0) - 80}px)`,
+                                    transition: 'transform 0.5s',
+                                    maxWidth: '80%',
+                                    width: 'fit-content',
+                                    left: '50vw',
+                                    top: hintTextAtBottom ? (hint.bottom * window.innerWidth * 1.414 * 1.1) : (hint.top * window.innerWidth * 1.414),
+                                }}
+                                initial={{
+                                    opacity: 0.0,
+                                }}
+                                animate={{
+                                    opacity: 1,
+                                }}
+                                transition={{
+                                    duration: 0.3,
+                                    delay: 0.7,
+                                }}
                             >
-                                {hintText + ((dollarCount % 2 == 1)?'$': '')}
-                            </Markdown>
-                        </motion.div>
-                    </>
+                                <Markdown
+                                    remarkPlugins={[remarkMath]}
+                                    rehypePlugins={[rehypeKatex]}
+                                >
+                                    {hintText + ((dollarCount % 2 == 1)?'$': '')}
+                                </Markdown>
+                            </motion.div>
+    }
+                    </span>
                 )
             }
             <Button

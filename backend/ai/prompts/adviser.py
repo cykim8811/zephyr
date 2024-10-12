@@ -19,6 +19,7 @@ system_prompt2 = """
 - 모든 분석이 완료된 후, 이를 XML 형식으로 변환하여라.
 - LaTeX 형식을 사용할 때에는, $ 표시 사이에 수식을 넣어야 한다. 예를 들어, $y = x^2$는 y = x^2로 변환되어야 한다.
   이를 지키지 않을 경우, 오류처리되어 즉시 오답처리된다.
+- 문제의 풀이에는 지장이 없지만 문제의 조건을 빼먹은 경우, 조언에 "~라 하기 위해서는 어떤 조건이 필요할까요?"와 같은 질문을 사용하여라.
 
 # 문제
 {problem}
@@ -29,14 +30,21 @@ system_prompt2 = """
 # 해당 단계의 스킬
 {skills}
 
+# 학생의 식
+{student_formula}
+
 # 예시
 ### 오류가 없을 경우
 - 옳은 풀이
 Skill C를 참고하여 봤을 때, 학생은 초항을 구하기 위하여 $a_1 = a_8 - 7d$를 사용하여야 한다.
 고로 학생은 $a_1 = 20 - 7 * 4 = -8$이라 써야 한다.
+
 - 학생의 풀이
 학생은 초항을 구할 때, $a_1 = a_8 - 7d$를 사용하여 $a_1 = 20 - 7 * 4 = -8$을 구하였다.
+
+- 평가
 따라서, 학생은 초항을 올바르게 구하였다.
+
 - XML 변환
 <output></output>
 
@@ -44,9 +52,13 @@ Skill C를 참고하여 봤을 때, 학생은 초항을 구하기 위하여 $a_1
 - 옳은 풀이
 - Skill C를 참고하여 봤을 때, 학생은 초항을 구하기 위하여 $a_1 = a_8 - 7d$를 사용하여야 한다.
 고로 학생은 $a_1 = 20 - 7 * 4 = -8$이라 써야 한다.
+
 - 학생의 풀이
 학생은 초항을 구할 때, $a_1 = a_8 - 8d$를 사용하여 $a_1 = 20 - 8 * 4 = -12$을 구하였다.
+
+- 평가
 따라서, 학생은 초항을 구하는 과정에서 오류가 발생하였다.
+
 - XML 변환
 <output>
     <error>학생은 8번째 항과 공차를 이용하여 초항을 구하는 과정에서 오류가 발생하였다.</error>
@@ -59,6 +71,7 @@ Skill C를 참고하여 봤을 때, 학생은 초항을 구하기 위하여 $a_1
 - LaTeX 형식을 사용할 때에는, $ 표시 사이에 수식을 넣어야 한다. 이를 지키지 않을 경우, 오류처리되어 즉시 오답처리된다.
 - "평가하여야 하는 단계"는 학생의 답안에서 특정 부분을 의미한다. 이 부분 만을 평가하도록 하고, 이 부분 외의 다른 부분을 평가하지 않도록 주의하여라.
   "평가하여야 하는 단계" 이외의 부분을 평가할 경우, 심각한 오류로 간주되어 즉시 오답처리된다.
+- "옳은 풀이" 항목에서는, Skill에서 제시하는 범위 내에서만 평가하여야 한다.
 """
 
 padding = 0.06
@@ -98,8 +111,9 @@ def parse(problem, images, step):
 
     total_prompt = system_prompt2.replace("{problem}", problem.text)\
                     .replace("{skills}", '\n\n'.join(skills))\
-                    .replace("{step}", step["process"])
-    print("\n\n[total_prompt]\n" + total_prompt)
+                    .replace("{step}", step["process"])\
+                    .replace("{student_formula}", step["formula"])
+    print("step:", step)
     response = client.chat.completions.create(
         model="gpt-4o",
         messages=[
@@ -110,20 +124,20 @@ def parse(problem, images, step):
             {
                 "role": "user",
                 "content": [
-                    {
-                        "type": "image_url",
-                        "image_url": {
-                            "url": f"data:image/jpeg;base64,{img_str}",
-                            "detail": "high",
-                        },
-                    },
                     # {
                     #     "type": "image_url",
                     #     "image_url": {
-                    #         "url": f"data:image/jpeg;base64,{total_img_str}",
-                    #         "detail": "low",
+                    #         "url": f"data:image/jpeg;base64,{img_str}",
+                    #         "detail": "high",
                     #     },
-                    # }
+                    # },
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/jpeg;base64,{total_img_str}",
+                            "detail": "high",
+                        },
+                    }
                 ],
             }
         ],
