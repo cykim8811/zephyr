@@ -34,6 +34,7 @@ const ProblemView: React.FC = () => {
     const [showHint, setShowHint] = useState<boolean>(true);
 
     const [hint, setHint] = useState<Hint | null>(null);
+    const [streamingNum, setStreamingNum] = useState<number>(0);
 
     useEffect(() => {
         if (id === undefined) return;
@@ -95,6 +96,8 @@ const ProblemView: React.FC = () => {
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         
+        setStreamingNum(streamingNum + 1);
+        
         while (true) {
             const { done, value } = await reader.read();
             if (done) {
@@ -137,6 +140,7 @@ const ProblemView: React.FC = () => {
                     <ProblemCanvas
                         key={index} penType={penType} pageData={pageData[index]} hint={hint?.page_id === index ? hint : null}
                         showHint={showHint}
+                        streamingNum={streamingNum}
                         setCanvas={(canvas: HTMLCanvasElement) => {
                             canvasRefs.current[index] = canvas;
                         }}

@@ -27,6 +27,9 @@ system_prompt2 = """
 # 평가하여야 하는 단계
 {step}
 
+# 전체 스킬
+{total_skills}
+
 # 해당 단계의 스킬
 {skills}
 
@@ -117,7 +120,8 @@ def parse(problem, images, step):
     total_prompt = system_prompt2.replace("{problem}", problem.text)\
                     .replace("{skills}", '\n\n'.join(skills))\
                     .replace("{step}", step["process"])\
-                    .replace("{student_formula}", step["formula"])
+                    .replace("{student_formula}", step["formula"])\
+                    .replace("{total_skills}", problem.prompt)
     print("step:", step)
     response = client.chat.completions.create(
         model="gpt-4o",

@@ -18,9 +18,10 @@ interface ProblemCanvasProps {
     setCanvas: (canvas: HTMLCanvasElement) => void;
     hint: Hint | null;
     showHint: boolean;
+    streamingNum: number;
 }
 
-const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType, pageData, setPageData, addPageData, setCanvas, hint, showHint }) => {
+const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType, pageData, setPageData, addPageData, setCanvas, hint, showHint, streamingNum }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const overlayCanvasRef = useRef<HTMLCanvasElement>(null);
     const eraserDisplayRef = useRef<HTMLDivElement>(null);
@@ -58,6 +59,12 @@ const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType, pageData, setPag
         if (hintText[i] === '$') dollarCount++;
     }
 
+    let boxColor = 'border-gray-500';
+
+    if (hint?.text == "*N") boxColor = 'border-gray-500';
+    else if (hint?.text == "*G") boxColor = 'border-green-500';
+    else boxColor = 'border-red-500';
+
     const hintTextAtBottom = (hint?.top??0) * window.innerWidth * 1.414 < ((hintRef.current?.offsetHeight ?? 0) * 1.5 + 40);
     return (
         <div className="relative">
@@ -83,7 +90,7 @@ const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType, pageData, setPag
                         showHint ? 'opacity-100' : 'opacity-0'
                     }>
                         <motion.div
-                            key={`${hint.left}-${hint.right}-${hint.top}-${hint.bottom}`}
+                            key={`${streamingNum}-box`}
                             className="absolute pointer-events-none select-none overflow-hidden"
                             initial={{
                                 left: window.innerWidth * Math.max(hint.left - 0.05, 0) - window.innerWidth * 0.1,
@@ -99,27 +106,28 @@ const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType, pageData, setPag
                                 height: window.innerWidth * 1.414 * (Math.min((hint.bottom - hint.top + 0.1 + Math.max(hint.top - 0.05, 0)), 1) - Math.max(hint.top - 0.05, 0)),
                                 opacity: 1,
                             }}
+                            
                             transition={{
                                 duration: 0.4,
-                                ease: 'easeOut',
+                                ease: 'easeInOut',
                             }}
                         >
                             <div className="w-full h-full flex flex-row justify-between p-4">
                                 <div className="h-full flex flex-col justify-between">
-                                    <div className="w-4 h-4 border-l-4 border-t-4 border-red-400 rounded-tl-md" />
-                                    <div className="w-4 h-4 border-l-4 border-b-4 border-red-400 rounded-bl-md" />
+                                    <div className={`w-4 h-4 border-l-4 border-t-4 rounded-tl-md ${boxColor}`} />
+                                    <div className={`w-4 h-4 border-l-4 border-b-4 rounded-bl-md ${boxColor}`} />
                                 </div>
                                 <div className="h-full flex flex-col justify-between">
-                                    <div className="w-4 h-4 border-r-4 border-t-4 border-red-400 rounded-tr-md" />
-                                    <div className="w-4 h-4 border-r-4 border-b-4 border-red-400 rounded-br-md" />
+                                    <div className={`w-4 h-4 border-r-4 border-t-4 rounded-tr-md ${boxColor}`} />
+                                    <div className={`w-4 h-4 border-r-4 border-b-4 rounded-br-md ${boxColor}`} />
                                 </div>
                             </div>
                         </motion.div>
                         { hintText.length > 2 &&
                             <motion.div
-                                key={`${hint.left}-${hint.right}-${hint.top}-${hint.bottom}-text`}
+                                key={`${streamingNum}-text`}
                                 ref={hintRef}
-                                className="absolute p-8 text-black text-xl word-wrap pointer-events-none select-none break-keep border-2 border-gray-500/80 bg-white/95 rounded-xl opacity-70"
+                                className="absolute p-8 text-black text-xl word-wrap pointer-events-none select-none break-keep border-2 border-gray-500/80 bg-white/95 rounded-xl opacity-70 shadow-xl"
                                 style={{
                                     transform: hintTextAtBottom ?
                                         `translate(-50%, 120px)` :

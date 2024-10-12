@@ -31,22 +31,39 @@ def request_ai(request):
 
     images = [Image.open(image) for image in images]
 
-    steps = step_parser.parse(problem, images)
-
     def generate():
+        yield json.dumps({
+            "page_id": 0,
+            "left": 0.05,
+            "top": 0.05,
+            "right": 0.95,
+            "bottom": 0.95,
+            "text": "*N"
+        }) + "\n"
+
+        steps = step_parser.parse(problem, images)
+
         advice = None
         for step in steps:
+            yield json.dumps({
+                "page_id": step["page_id"],
+                "left": step["left"],
+                "top": step["top"],
+                "right": step["right"],
+                "bottom": step["bottom"],
+                "text": "*N"
+            }) + "\n"
             advice = adviser.parse(problem, images, step)
             if advice is not None:
                 yield json.dumps({
-                    "page_id": advice["page_id"],
-                    "left": advice["left"],
-                    "top": advice["top"],
-                    "right": advice["right"],
-                    "bottom": advice["bottom"],
+                    "page_id": step["page_id"],
+                    "left": step["left"],
+                    "top": step["top"],
+                    "right": step["right"],
+                    "bottom": step["bottom"],
                     "text": advice["advice"],
                 }) + "\n"
-                print("=" * 100)
+                return
             else:
                 yield json.dumps({
                     "page_id": step["page_id"],
@@ -54,10 +71,9 @@ def request_ai(request):
                     "top": step["top"],
                     "right": step["right"],
                     "bottom": step["bottom"],
-                    "text": "No error found...",
+                    "text": "*G",
                 }) + "\n"
-                print("=" * 100)
-        time.sleep(1)
+                time.sleep(1)
         yield "null\n"
     
     return StreamingHttpResponse(generate())
