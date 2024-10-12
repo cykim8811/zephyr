@@ -55,11 +55,4 @@ def request_ai(request):
             "text": advice["advice"],
         })
     else:
-        return JsonResponse({
-            "page_id": 0,
-            "left": 0,
-            "top": 0,
-            "right": 1,
-            "bottom": 0.8,
-            "text": "No error found",
-        })
+        return JsonResponse(None)
