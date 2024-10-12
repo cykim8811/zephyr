@@ -29,28 +29,31 @@ system_prompt1 = """
 # 지침
 - 학생의 답안을 단계별로 분석하여라.
 - 개별 풀이 단계, 해당하는 스킬, 위치, 텍스트를 기록하여라.
-- 모든 단계를 분석한 후, 이를 XML 형식으로 변환하여라.
+- 분석이 완료된 후, 이를 XML 형식으로 변환하여라.
+- LaTeX 형식을 사용할 때에는, $ 표시 사이에 수식을 넣어야 한다. 예를 들어, $y = x^2$는 y = x^2로 변환되어야 한다.
+  이를 지키지 않을 경우, 오류처리되어 즉시 오답처리된다.
+- 여러개의 스킬이 사용되는 경우, 각 스킬을 쉼표로 구분하여라.
 
 # 예시
 ### 1단계
 과정: 학생은 수열의 8번째 항과 9번째 항으로 공차를 구하고자 함.
+학생의 식: $12 - 8 = 4$
 스킬: Skill A
 위치: B5, C5
-식: 12 - 8 = 4
 
 ### 2단계
 과정: 학생은 공차와 8번째 항을 이용하여 초항을 구하고자 함.
+학생의 식: $8 - 4 * 7 = -20$
 스킬: Skill E
 위치: C7, C8, D7, D8, E7, E8
-식: 8 - 4 * 7 = -20
 
 ### 3단계
 과정: 학생은 초항과 공차를 이용하여 일반항을 구하고자 함.
+학생의 식: $a_n = -20 + 4 * (n - 1)$
 스킬: Skill F
 위치: A11, A12, B11, B12, C11, C12, D11, D12, E11, E12
-식: a_n = -20 + 4 * (n - 1)
 
-### 변환
+### XML 변환
 <output>
     <step>
         <process>학생은 수열의 8번째 항과 9번째 항으로 공차를 구하고자 함.</process>
@@ -59,7 +62,6 @@ system_prompt1 = """
         <top>5</top>
         <right>C</right>
         <bottom>5</bottom>
-        <equation>12 - 8 = 4</equation>
     </step>
     <step>
         <process>학생은 공차와 8번째 항을 이용하여 초항을 구하고자 함.</process>
@@ -68,7 +70,6 @@ system_prompt1 = """
         <top>7</top>
         <right>E</right>
         <bottom>8</bottom>
-        <equation>8 - 4 * 7 = -20</equation>
     </step>
     <step>
         <process>학생은 초항과 공차를 이용하여 일반항을 구하고자 함.</process>
@@ -77,18 +78,17 @@ system_prompt1 = """
         <top>11</top>
         <right>E</right>
         <bottom>12</bottom>
-        <equation>a_n = -20 + 4 * (n - 1)</equation>
     </step>
 </output>
 """
 
+grid_x_num = 10
+grid_y_num = 15
 def preprocess(image: Image, page_id: int) -> Image:
     overlay = Image.new("RGBA", image.size, (0, 0, 0, 0))
     draw = ImageDraw.Draw(overlay)
 
     width, height = image.size
-    grid_x_num = 10
-    grid_y_num = 15
 
     for i in range(grid_x_num + 1):
         x = (width - 2) * i // grid_x_num
@@ -156,13 +156,15 @@ def parse(problem, images):
                 ],
             }
         ],
-        max_tokens=1000,
+        max_tokens=2000,
+        temperature=0.2,
     )
     print(response.choices[0].message.content)
     print(f"{(response.usage.prompt_tokens * 2.5 / 1000000 + response.usage.completion_tokens * 10 / 1000000) * 1348}원")
 
     # parse response xml
     data = response.choices[0].message.content
+    print(data)
     data = data[data.find("<output>")+8:data.find("</output>")]
     
     import xml.etree.ElementTree as ET
@@ -170,14 +172,27 @@ def parse(problem, images):
     
     steps = []
     for step in root:
+        left = step.find("left").text
+        right = step.find("right").text
+        top = step.find("top").text
+        bottom = step.find("bottom").text
+
+        page_id = (int(top) - 1) // grid_y_num
+
+        left = (ord(left) - ord('A')) / grid_x_num
+        right = (ord(right) - ord('A') + 1) / grid_x_num
+        top = ((int(top) - 1) % grid_y_num) / grid_y_num
+        bottom = (((int(bottom) - 1) % grid_y_num) + 1) / grid_y_num
+
+
         steps.append({
             "process": step.find("process").text,
             "skill": step.find("skill").text,
-            "left": step.find("left").text,
-            "top": step.find("top").text,
-            "right": step.find("right").text,
-            "bottom": step.find("bottom").text,
-            "equation": step.find("equation").text,
+            "page_id": page_id,
+            "left": left,
+            "top": top,
+            "right": right,
+            "bottom": bottom,
         })
 
     return steps

@@ -17,7 +17,7 @@ from io import BytesIO
 from PIL import Image, ImageDraw
 from typing import List, Dict, Union
 
-from .prompts import step_parser
+from .prompts import step_parser, adviser
 
 
 
@@ -40,6 +40,26 @@ def request_ai(request):
 
     steps = step_parser.parse(problem, images)
 
-    print(steps)
+    advice = None
+    for step in steps:
+        advice = adviser.parse(problem, images, step)
+        if advice is not None: break
 
-    return HttpResponse("OK", status=200)
+    if advice is not None:
+        return JsonResponse({
+            "page_id": advice["page_id"],
+            "left": advice["left"],
+            "top": advice["top"],
+            "right": advice["right"],
+            "bottom": advice["bottom"],
+            "text": advice["advice"],
+        })
+    else:
+        return JsonResponse({
+            "page_id": 0,
+            "left": 0,
+            "top": 0,
+            "right": 1,
+            "bottom": 0.8,
+            "text": "No error found",
+        })
