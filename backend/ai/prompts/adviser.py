@@ -51,17 +51,17 @@ system_prompt2 = """
 - LaTeX 형식을 사용할 때에는, $ 표시 사이에 수식을 넣어야 한다. 이를 지키지 않을 경우, 오류처리되어 즉시 오답처리된다.
 - "평가하여야 하는 단계"는 학생의 답안에서 특정 부분을 의미한다. 이 부분 외의 다른 부분을 평가하지 않도록 주의하여라.
 """
-
+padding = 0.06
 def parse(problem, images, step):
     print("adviser", step)
     page_id = step["page_id"]
     total_image = images[page_id]
 
     # crop image
-    crop_left = max(0, step["left"] - 0.1)
-    crop_top = max(0, step["top"] - 0.1 * (total_image.width / total_image.height))
-    crop_right = min(1, step["right"] + 0.1)
-    crop_bottom = min(1, step["bottom"] + 0.1 * (total_image.width / total_image.height))
+    crop_left = max(0, step["left"] - padding)
+    crop_top = max(0, step["top"] - padding * (total_image.width / total_image.height))
+    crop_right = min(1, step["right"] + padding)
+    crop_bottom = min(1, step["bottom"] + padding * (total_image.width / total_image.height))
     
     image = total_image.crop((
         crop_left * total_image.width,
@@ -103,15 +103,15 @@ def parse(problem, images, step):
                     {
                         "type": "image_url",
                         "image_url": {
-                            "url": f"data:image/jpeg;base64,{total_img_str}",
-                            "detail": "low",
+                            "url": f"data:image/jpeg;base64,{img_str}",
+                            "detail": "high",
                         },
                     },
                     {
                         "type": "image_url",
                         "image_url": {
-                            "url": f"data:image/jpeg;base64,{img_str}",
-                            "detail": "high",
+                            "url": f"data:image/jpeg;base64,{total_img_str}",
+                            "detail": "low",
                         },
                     }
                 ],
@@ -147,3 +147,4 @@ def parse(problem, images, step):
         "error": error,
         "advice": advice,
     }
+

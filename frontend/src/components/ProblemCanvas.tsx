@@ -7,7 +7,7 @@ import Markdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 
-import '../styles/kalam_katex.css';
+// import '../styles/kalam_katex.css';
 import { Button } from './ui/button';
 
 interface ProblemCanvasProps {
@@ -23,6 +23,7 @@ const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType, pageData, setPag
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const overlayCanvasRef = useRef<HTMLCanvasElement>(null);
     const eraserDisplayRef = useRef<HTMLDivElement>(null);
+    const hintRef = useRef<HTMLDivElement>(null);
     useProblemCanvasHooks(canvasRef, eraserDisplayRef, penType, pageData, setPageData, addPageData, overlayCanvasRef);
 
     useEffect(() => {
@@ -74,27 +75,59 @@ const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType, pageData, setPag
                     <>
                         <motion.div
                             key={`${hint.left}-${hint.right}-${hint.top}-${hint.bottom}`}
-                            className="absolute text-transparent decoration-red-600 pointer-events-none select-none overflow-hidden underline decoration-wavy"
-                            style={{
-                                left: window.innerWidth * hint.left,
-                                top: window.innerWidth * 1.5 * hint.bottom - 46,
-                                overflow: 'hidden',
-                                fontSize: '48px',
+                            className="absolute pointer-events-none select-none overflow-hidden"
+                            initial={{
+                                left: window.innerWidth * hint.left - window.innerWidth * 0.15,
+                                top: window.innerWidth * 1.414 * hint.top - window.innerWidth * 0.15,
+                                width: window.innerWidth * (hint.right - hint.left) + window.innerWidth * 0.2,
+                                height: window.innerWidth * 1.414 * (hint.bottom - hint.top) + window.innerWidth * 0.2,
+                                opacity: 0.3,
                             }}
-                            initial={{ width: 0 }}
-                            animate={{ width: window.innerWidth * (hint.right - hint.left) }}
-                            transition={{ duration: 0.5, ease: 'linear' }}
+                            animate={{
+                                left: window.innerWidth * hint.left - window.innerWidth * 0.05,
+                                top: window.innerWidth * 1.414 * hint.top - window.innerWidth * 0.05,
+                                width: window.innerWidth * (hint.right - hint.left) + window.innerWidth * 0.1,
+                                height: window.innerWidth * 1.414 * (hint.bottom - hint.top) + window.innerWidth * 0.1,
+                                opacity: 1,
+                            }}
+                            transition={{
+                                duration: 0.5,
+                            }}
                         >
-                            {"aaaaaaaaa".repeat(Math.round((hint.right - hint.left) * 10))}
+                            <div className="w-full h-full flex flex-row justify-between">
+                                <div className="h-full flex flex-col justify-between">
+                                    <div className="w-4 h-4 border-l-4 border-t-4 border-red-400 rounded-tl-md" />
+                                    <div className="w-4 h-4 border-l-4 border-b-4 border-red-400 rounded-bl-md" />
+                                </div>
+                                <div className="h-full flex flex-col justify-between">
+                                    <div className="w-4 h-4 border-r-4 border-t-4 border-red-400 rounded-tr-md" />
+                                    <div className="w-4 h-4 border-r-4 border-b-4 border-red-400 rounded-br-md" />
+                                </div>
+                            </div>
                         </motion.div>
-                        <div
+                        <motion.div
                             key={`${hint.left}-${hint.right}-${hint.top}-${hint.bottom}-text`}
-                            className="absolute p-2 text-red-700 text-3xl word-wrap pointer-events-none select-none break-keep"
+                            ref={hintRef}
+                            className="absolute p-8 text-black text-2xl word-wrap pointer-events-none select-none break-keep border-2 border-gray-800/80 bg-white/80 rounded-xl opacity-70"
                             style={{
-                                fontFamily: 'Nanum Pen Script, cursive',
-                                left: window.innerWidth * hint.left,
-                                top: window.innerWidth * 1.5 * hint.bottom + 10,
-                                width: window.innerWidth - window.innerWidth * hint.left,
+                                transform: `translate(0, -${hintRef.current?.offsetHeight ?? 0}px)`,
+                                transition: 'transform 0.5s',
+                            }}
+                            initial={{
+                                left: window.innerWidth * hint.left - window.innerWidth * 0.05,
+                                top: window.innerWidth * 1.414 * hint.top - window.innerWidth * 0.05 - 30,
+                                width: window.innerWidth * (hint.right - hint.left) + window.innerWidth * 0.1,
+                                opacity: 0.0,
+                            }}
+                            animate={{
+                                left: window.innerWidth * hint.left - window.innerWidth * 0.05,
+                                top: window.innerWidth * 1.414 * hint.top - window.innerWidth * 0.05 - 30,
+                                width: window.innerWidth * (hint.right - hint.left) + window.innerWidth * 0.1,
+                                opacity: 1,
+                            }}
+                            transition={{
+                                duration: 0.3,
+                                delay: 0.5,
                             }}
                         >
                             <Markdown
@@ -103,7 +136,7 @@ const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType, pageData, setPag
                             >
                                 {hintText}
                             </Markdown>
-                        </div>
+                        </motion.div>
                     </>
                 )
             }
