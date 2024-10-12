@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, StreamingHttpResponse
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -7,6 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from problem.models import Problem
 
 from PIL import Image
+import json
+import time
 
 from .prompts import step_parser, adviser
 
@@ -31,27 +33,31 @@ def request_ai(request):
 
     steps = step_parser.parse(problem, images)
 
-    advice = None
-    for step in steps:
-        advice = adviser.parse(problem, images, step)
-        if advice is not None: break
-
-    if advice is not None:
-        print({
-            "page_id": advice["page_id"],
-            "left": advice["left"],
-            "top": advice["top"],
-            "right": advice["right"],
-            "bottom": advice["bottom"],
-            "text": advice["advice"],
-        })
-        return JsonResponse({
-            "page_id": advice["page_id"],
-            "left": advice["left"],
-            "top": advice["top"],
-            "right": advice["right"],
-            "bottom": advice["bottom"],
-            "text": advice["advice"],
-        })
-    else:
-        return JsonResponse(None, safe=False)
+    def generate():
+        advice = None
+        for step in steps:
+            advice = adviser.parse(problem, images, step)
+            if advice is not None:
+                yield json.dumps({
+                    "page_id": advice["page_id"],
+                    "left": advice["left"],
+                    "top": advice["top"],
+                    "right": advice["right"],
+                    "bottom": advice["bottom"],
+                    "text": advice["advice"],
+                }) + "\n"
+                print("=" * 100)
+            else:
+                yield json.dumps({
+                    "page_id": step["page_id"],
+                    "left": step["left"],
+                    "top": step["top"],
+                    "right": step["right"],
+                    "bottom": step["bottom"],
+                    "text": "No error found...",
+                }) + "\n"
+                print("=" * 100)
+        time.sleep(1)
+        yield "null\n"
+    
+    return StreamingHttpResponse(generate())

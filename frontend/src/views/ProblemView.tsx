@@ -58,6 +58,7 @@ const ProblemView: React.FC = () => {
 
     const handleAIClick = async (e: TouchEvent) => {
         if (id === undefined) return;
+        setShowHint(true);
         const formData = new FormData();
         formData.append('problem_id', id);
 
@@ -73,20 +74,39 @@ const ProblemView: React.FC = () => {
             formData.append('images', image);
         });
 
-        await axios.post(
-            window.location.origin + '/api/ai/',
-            formData,
-            {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    'X-CSRFToken': getCsrfToken(),
-                }
+        const csrfToken = getCsrfToken();
+        if (csrfToken === undefined) {
+            alert('CSRF token not found');
+            return;
+        }
+        const response = await fetch(window.location.origin + '/api/ai/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': csrfToken,
             }
-        ).then((response) => {
-            setHint(response.data);
-        }).catch((e) => {
-            alert(e);
-        });
+        })
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        if (!response.body) {
+            throw new Error('ReadableStream not yet supported in this browser.');
+        }
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) {
+                break;
+            }
+            const result = decoder.decode(value, { stream: true }).split('\n');
+            const text = result[result.length - 2];
+            console.log(text);
+
+            const data = JSON.parse(text);
+            setHint(data);
+        }
     }
 
     const handleHintToggle = (e: TouchEvent) => {
