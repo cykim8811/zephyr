@@ -13,13 +13,8 @@ system_prompt2 = """
 # 역할
 - 학생의 수학 문제 풀이의 해당 단계를 분석하여야 한다.
 - 문제 풀이의 전체와 일부분이 이미지로 주어지며, 해당 단계에서 사용되는 스킬이 주어진다.
-- 학생의 답안을 분석하여, 오류가 있는지 확인하고, 오류가 있다면 어떤 부분에서 오류가 발생하였는지 설명하여라.
-- 오류가 있는 경우, 학생에게 조언을 제공하여라. 학생이 제대로 된 답을 제공할 수 있도록 하는 질문 형식이 권장된다.
-  다만, 학생에게 직접 옳은 정답을 제공하는 것은 부정행위로 간주되어 즉시 오답처리된다.
-- 모든 분석이 완료된 후, 이를 XML 형식으로 변환하여라.
-- LaTeX 형식을 사용할 때에는, $ 표시 사이에 수식을 넣어야 한다. 예를 들어, $y = x^2$는 y = x^2로 변환되어야 한다.
-  이를 지키지 않을 경우, 오류처리되어 즉시 오답처리된다.
-- 문제의 풀이에는 지장이 없지만 문제의 조건을 빼먹은 경우, 조언에 "~라 하기 위해서는 어떤 조건이 필요할까요?"와 같은 질문을 사용하여라.
+- 학생의 답안을 분석하여, 오류가 있는지 확인하여라.
+- 모든 분석이 완료된 후, 이를 XML 형식으로 'Correct' 또는 'Error'로 반환하여라.
 
 # 문제
 {problem}
@@ -49,7 +44,9 @@ Skill C를 참고하여 봤을 때, 학생은 초항을 구하기 위하여 $a_1
 따라서, 학생은 초항을 올바르게 구하였다.
 
 - XML 변환
-<output></output>
+<output>
+    <answer>Correct</answer>
+</output>
 
 ### 오류가 있을 경우
 - 옳은 풀이
@@ -61,11 +58,13 @@ Skill C를 참고하여 봤을 때, 학생은 초항을 구하기 위하여 $a_1
 
 - 평가
 따라서, 학생은 초항을 구하는 과정에서 오류가 발생하였다.
+학생은 8번째 항에서 공차의 7배를 빼야 하는데, 8번째 항에서 공차의 8배를 빼는 실수를 범하였다.
 
 - XML 변환
 <output>
-    <error>학생은 8번째 항과 공차를 이용하여 초항을 구하는 과정에서 오류가 발생하였다.</error>
-    <advice>초항을 구할 때, 8번째 항에서 공차에 몇을 곱해서 빼야 초항을 구할 수 있을까요?</advice>
+    <answer>Error</answer>
+    <correct>초항을 구하기 위하여 $a_1 = a_8 - 7d$를 사용하여야 한다. 고로 학생은 $a_1 = 20 - 7 * 4 = -8$이라 써야 한다.</correct>
+    <student>학생은 초항을 구할 때, $a_1 = a_8 - 8d$를 사용하여 $a_1 = 20 - 8 * 4 = -12$을 구하였다.</student>
 </output>
 
 # 평가 단계 예시
@@ -75,11 +74,42 @@ Skill C를 참고하여 봤을 때, 학생은 초항을 구하기 위하여 $a_1
 
 # 주의사항
 - 학생에게 직접 옳은 정답을 제공하는 것은 부정행위로 간주되어 즉시 오답처리된다.
-- 학생에게 질문 형식으로 조언을 제공하여라.
-- LaTeX 형식을 사용할 때에는, $ 표시 사이에 수식을 넣어야 한다. 이를 지키지 않을 경우, 오류처리되어 즉시 오답처리된다.
 - "평가하여야 하는 단계"는 학생의 답안에서 특정 부분을 의미한다. 이 부분 만을 평가하도록 하고, 이 부분 외의 다른 부분을 평가하지 않도록 주의하여라.
   "평가하여야 하는 단계" 이외의 부분을 평가할 경우, 심각한 오류로 간주되어 즉시 오답처리된다.
 - "옳은 풀이" 항목에서는, Skill에서 제시하는 범위 내에서만 평가하여야 한다.
+"""
+
+system_prompt3 = """
+# 역할
+- 학생의 수학 문제 풀이의 오류에 대해, 조언을 제공하여야 한다.
+- 학생이 제대로 된 답을 제공할 수 있도록 하는 질문 형식이 권장된다.
+  다만, 학생에게 직접 옳은 정답을 제공하는 것은 부정행위로 간주되어 즉시 오답처리된다.
+- 문제의 풀이에는 지장이 없지만 문제의 조건을 빼먹은 경우, 조언에 "~라 하기 위해서는 어떤 조건이 필요할까요?"와 같은 질문을 사용하여라.
+- LaTeX 형식을 사용할 때에는, $ 표시 사이에 수식을 넣어야 한다. 예를 들어, $y = x^2$는 y = x^2로 변환되어야 한다.
+  이를 지키지 않을 경우, 오류처리되어 즉시 오답처리된다.
+
+# 문제
+{problem}
+
+# 문제의 스킬
+{skills}
+  
+# 학생이 오류를 범한 단계
+{process}
+  
+# 바람직한 풀이
+{correct}
+
+# 학생의 풀이
+{student}
+
+# 출력 예시
+- 초항을 구할 때, $a_8%에서 공차의 몇 배를 빼야 할까요?
+- 밑변의 길이와 높이가 같은 직각삼각형의 넓이를 구하려면 어떤 공식을 사용해야 할까요?
+
+# 주의사항
+- 학생에게 직접 옳은 정답을 제공하는 것은 부정행위로 간주되어 즉시 오답처리된다.
+- 2 문장 이내의 응답이 바람직하다.
 """
 
 padding = 0.06
@@ -151,25 +181,56 @@ def parse(problem, images, step):
             }
         ],
         max_tokens=1000,
-        temperature=0.2,
+        temperature=0.6,
     )
 
     # parse response xml
     data = response.choices[0].message.content
-    print("\n\n[chatgpt result]\n" + data)
+    print("\n\n[evaluator result]\n" + data)
     data = data[data.find("<output>")+8:data.find("</output>")]
 
     import xml.etree.ElementTree as ET
     root = ET.fromstring(f"<output>{data}</output>")
 
-    error = root.find("error")
-    advice = root.find("advice")
+    answer = root.find("answer").text
 
-    if error is None or advice is None:
+    if answer == "Correct":
         return None
     
-    error = error.text
-    advice = advice.text
+    student = root.find("student").text
+    correct = root.find("correct").text
+    
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+            {
+                "role": "system",
+                "content": system_prompt3\
+                    .replace("{problem}", problem.text)\
+                    .replace("{process}", step["process"])\
+                    .replace("{student}", student)\
+                    .replace("{correct}", correct)\
+                    .replace("{skills}", '\n\n'.join(skills)),
+            },
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/jpeg;base64,{img_str}",
+                            "detail": "high",
+                        },
+                    },
+                ],
+            }
+        ],
+        max_tokens=1000,
+        temperature=0.5,
+    )
+
+    advice = response.choices[0].message.content
+    print("\n\n[adviser result]\n" + advice)
 
     return {
         "page_id": page_id,
@@ -177,7 +238,6 @@ def parse(problem, images, step):
         "top": step["top"],
         "right": step["right"],
         "bottom": step["bottom"],
-        "error": error,
         "advice": advice,
     }
 
