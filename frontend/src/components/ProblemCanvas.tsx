@@ -63,6 +63,7 @@ const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType, pageData, setPag
 
     if (hint?.text == "*N") boxColor = 'border-gray-500';
     else if (hint?.text == "*G") boxColor = 'border-green-500';
+    else if (hint?.text.startsWith("*P")) boxColor = 'border-purple-500';
     else boxColor = 'border-red-500';
 
     const hintTextAtBottom = (hint?.top??0) * window.innerWidth * 1.414 < ((hintRef.current?.offsetHeight ?? 0) * 1.5 + 40);
@@ -114,12 +115,12 @@ const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType, pageData, setPag
                         >
                             <div className="w-full h-full flex flex-row justify-between p-4">
                                 <div className="h-full flex flex-col justify-between">
-                                    <div className={`w-4 h-4 border-l-4 border-t-4 rounded-tl-md ${boxColor}`} />
-                                    <div className={`w-4 h-4 border-l-4 border-b-4 rounded-bl-md ${boxColor}`} />
+                                    <div className={`w-4 h-4 transition-colors border-l-4 border-t-4 rounded-tl-md ${boxColor}`} />
+                                    <div className={`w-4 h-4 transition-colors border-l-4 border-b-4 rounded-bl-md ${boxColor}`} />
                                 </div>
                                 <div className="h-full flex flex-col justify-between">
-                                    <div className={`w-4 h-4 border-r-4 border-t-4 rounded-tr-md ${boxColor}`} />
-                                    <div className={`w-4 h-4 border-r-4 border-b-4 rounded-br-md ${boxColor}`} />
+                                    <div className={`w-4 h-4 transition-colors border-r-4 border-t-4 rounded-tr-md ${boxColor}`} />
+                                    <div className={`w-4 h-4 transition-colors border-r-4 border-b-4 rounded-br-md ${boxColor}`} />
                                 </div>
                             </div>
                         </motion.div>
@@ -153,7 +154,7 @@ const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType, pageData, setPag
                                     remarkPlugins={[remarkMath]}
                                     rehypePlugins={[rehypeKatex]}
                                 >
-                                    {hintText + ((dollarCount % 2 == 1)?'$': '')}
+                                    {hintText.replace('*P', '') + ((dollarCount % 2 == 1)?'$': '')}
                                 </Markdown>
                             </motion.div>
     }

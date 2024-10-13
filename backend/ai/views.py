@@ -53,6 +53,16 @@ def request_ai(request):
                 "bottom": step["bottom"],
                 "text": "*N"
             }) + "\n"
+            if step["chat"] is not None:
+                yield json.dumps({
+                    "page_id": step["page_id"],
+                    "left": step["left"],
+                    "top": step["top"],
+                    "right": step["right"],
+                    "bottom": step["bottom"],
+                    "text": "*P" + step["chat"],
+                }) + "\n"
+                return
             advice = adviser.parse(problem, images, step)
             if advice is not None:
                 yield json.dumps({
