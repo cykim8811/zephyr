@@ -23,8 +23,7 @@ system_prompt1 = """
 {skills}
 
 ## 정답
-
-\\frac{dy}{dx}=-\\frac{2\\pi}{3}
+{answer}
 
 # 지침
 - 학생의 답안을 단계별로 분석하여라.
@@ -33,24 +32,27 @@ system_prompt1 = """
 - 분석이 완료된 후, 이를 XML 형식으로 변환하여라.
 - LaTeX 형식을 사용할 때에는, $ 표시 사이에 수식을 넣어야 한다. 예를 들어, $y = x^2$는 y = x^2로 변환되어야 한다.
   이를 지키지 않을 경우, 오류처리되어 즉시 오답처리된다.
+- 그래프의 경우, '해당 단계 내용' 부분에 그래프의 내용을 간략하게 작성하여라.
 - 여러개의 스킬이 사용되는 경우, 각 스킬을 쉼표로 구분하여라.
+- 만약 학생의 풀이가 Skill에 제시된 방향과 다르다면, '스킬'에는 '-'를 작성하고 최대한 학생의 풀이를 있는 그대로 기록하여라.
 
 # 예시
+[서약] 이미지를 기반으로, 학생의 답안 분석을 시작합니다. Skill 등의 참고자료로 학생의 답안을 이미지와 다르게 수정하지 않도록 하겠습니다. 이를 어길 시, 이에 따른 모든 책임을 지도록 하겠습니다.
 ### 1단계
 과정: 학생은 수열의 8번째 항과 9번째 항으로 공차를 구하고자 함.
-학생의 식: $12 - 8 = 4$
+해당 단계 내용: $12 - 8 = 4$
 스킬: Skill A
 위치: B5, C5
 
 ### 2단계
 과정: 학생은 공차와 8번째 항을 이용하여 초항을 구하고자 함.
-학생의 식: $8 - 4 * 7 = -20$
+해당 단계 내용: $8 - 4 * 7 = -20$
 스킬: Skill E
 위치: C7, C8, D7, D8, E7, E8
 
 ### 3단계
 과정: 학생은 초항과 공차를 이용하여 일반항을 구하고자 함.
-학생의 식: $a_n = -20 + 4 * (n - 1)$
+해당 단계 내용: $a_n = -20 + 4 * (n - 1)$
 스킬: Skill F
 위치: A11, A12, B11, B12, C11, C12, D11, D12, E11, E12
 
@@ -144,7 +146,7 @@ def parse(problem, images):
         messages=[
             {
                 "role": "system",
-                "content": system_prompt1.replace("{problem}", problem.text).replace("{skills}", problem.prompt),
+                "content": system_prompt1.replace("{problem}", problem.text).replace("{skills}", problem.prompt).replace("{answer}", problem.answer),
             },
             {
                 "role": "user",
