@@ -74,7 +74,7 @@ class OpenAISession:
     
     def ask(self, text, config={}):
         config = {**self.default_config, **config}
-        if self.verbose: print("User:", text)
+        if self.verbose: print("\n[User]\n", text)
         self.messages.append({ "role": "user", "content": text })
         response = client.chat.completions.create(
             messages=self.messages,
@@ -82,19 +82,19 @@ class OpenAISession:
         ).choices[0].message.content
         self.messages.append({ "role": "assistant", "content": response })
         colorcode = "\033[92m"
-        if self.verbose: print(colorcode + "AI:", response + "\033[0m")
+        if self.verbose: print(colorcode + "\n[AI]\n" + response + "\033[0m")
         return response
 
     def request(self, inputs, config={}):
         config = {**self.default_config, **config}
         self.messages.append({ "role": "user", "content": inputs })
-        if self.verbose: print("User:", "(multiple inputs)")
+        if self.verbose: print("\n[User]\n", "(multiple inputs)")
         response = client.chat.completions.create(
             messages=self.messages,
             **config
         ).choices[0].message.content
         colorcode = "\033[92m"
-        if self.verbose: print(colorcode + "AI:", response + "\033[0m")
+        if self.verbose: print(colorcode + "\n[AI]\n" + response + "\033[0m")
         self.messages.append({ "role": "assistant", "content": response })
         return response
         
@@ -154,7 +154,9 @@ def request_ai(request):
 
 """\
     .replace("{problem}", problem.text)\
-    .replace("{skills}", problem.prompt)\
+    .replace("{skills}", 
+             "\n".join([k + ": " + v for k, v in json.loads(problem.prompt).items()])
+             )\
         },
         {
             "role": "user",
@@ -176,16 +178,35 @@ def request_ai(request):
     response = session.ask("""
 주어진 Skill들을 활용하여, 이미지에 주어진 학생의 문제 풀이의 처음 단계를 분석해주세요. 마지막 줄에 태그를 추가해주세요.
 만약 오류가 있다면 [오류]라고 표시해주시고, 만약 오류가 없고 마지막 단계라면 [종료]라고 표시해주세요. 다음 단계가 존재하면 [계속] 이라고 표시해주세요.
+'스킬'은 문제의 참고 기술 중에서 사용된 것을 그대로 적어주세요.
+'비교'는 학생의 풀이와 스킬의 각 부분이 정확하게 일치하는지 확인해주세요.
+
+주의: 계산 결과가 옳더라도, 풀이 과정이 모두 맞아야 정답처리 됩니다.
 
 # 예시 1
 관찰: 학생의 풀이를 살펴보면, $a_1 \\times a_2 = a_3$이라고 적혀있습니다.
-비교: Skill C에 따르면 옳은 풀이는 $a_1 \\times a_2 = a_3$입니다.
+스킬: Skill C: $a_1 \\times a_2 = a_3$를 적용하면 $a_3 = 12$이다.
+비교: 두 풀이는 정확하게 일치합니다.
 평가: 따라서, 해당 단계에는 오류가 없습니다. [계속]
 
 # 예시 2
 관찰: 학생의 풀이를 살펴보면, $a_1 - a_2 = a_3$이라고 적혀있습니다.
-비교: Skill D에 따르면 옳은 풀이는 $a_1 + a_2 = a_3$입니다.
+스킬: Skill D: $a_1 + a_2 = a_3$를 적용하면 $a_3 = 8$이다.
+비교: 두 풀이에 차이가 존재합니다.
 평가: 학생은 덧셈을 사용해야 하는데, 뺄셈을 사용하는 오류를 범했습니다. [오류]
+
+# 예시 3
+관찰: 학생의 풀이를 살펴보면, $a_n = a_1 + 4 * n - 4$이라고 적혀있습니다.
+스킬: Skill G: $a_n = a_1 + d * (n - 1)$를 적용하면 $t_n = 8 + 4 * (n - 1)$이다.
+비교: 두 풀이에 차이가 존재합니다.
+평가: 학생은 $(n - 1)$을 전개한 형태를 활용하였으나, 이는 스킬의 식과 본질적으로 같으므로, 해당 단계에는 오류가 없습니다. [계속]
+
+# 예시 4
+관찰: 학생의 풀이를 살펴보면, $a_1 = 3 + 2 + 5 = 10$이라고 적혀있습니다.
+스킬: Skill A: $a_1 = p + r + a_3$를 적용하면 $a_1 = 3 + 3 + 4 = 10$이다.
+비교: 두 풀이의 결과는 같으나 풀이 과정이 다릅니다.
+평가: 학생은 $r$과 $a_3$의 값을 잘못 구하였습니다. [오류]
+
 """)
     while "[오류]" not in response:
         response = session.ask("주어진 Skill들을 활용하여, 이미지에 주어진 학생의 문제 풀이의 다음 단계를 분석해주세요. 마지막 줄에 태그를 추가해주세요.")
@@ -221,7 +242,7 @@ ex) $a_1 \\times a_2 = a_3$, $\\frac{a_1}{a_2} = a_3$
 
     advice = result[result.find("<output>")+8:result.find("</output>")]
 
-    position1 = session.request([
+    position = session.request([
         {
             "type": "image_url",
             "image_url": {
@@ -233,19 +254,17 @@ ex) $a_1 \\times a_2 = a_3$, $\\frac{a_1}{a_2} = a_3$
     ] + [
         {
             "type": "text",
-            "text": "이미지에 격자를 겹쳐 제공합니다. 해당 오류의 공식을 다시 말하고, 해당 오류의 가장 왼쪽 위의 셀을 XML 형태로 제시해주세요."
+            "text": "이미지에 격자를 겹쳐 제공합니다. 해당 오류의 공식을 다시 말하고, 해당 오류의 가장 왼쪽 위의 셀과 오른쪽 아래의 셀을 XML 형태로 제시해주세요."
             + "ex)"
             + "공식: $a_1 \\times a_2 = a_3$"
-            + "<lt>C8</lt>"
+            + "<lt>C8</lt><rb>D12</rb>"
         }
     ])
 
-    position2 = session.ask("이번에는 해당 오류의 가장 오른쪽 아래의 셀을 XML 형태로 제시해주세요. ex) <rb>D12</rb>")
-
     # parse lt and rb
     import re
-    lt = re.search(r"<lt>(.*)</lt>", position1).group(1)
-    rb = re.search(r"<rb>(.*)</rb>", position2).group(1)
+    lt = re.search(r"<lt>(.*)</lt>", position).group(1)
+    rb = re.search(r"<rb>(.*)</rb>", position).group(1)
 
     left = ord(lt[0]) - ord('A')
     top = int(lt[1:])
