@@ -287,9 +287,9 @@ ex) $a_1 \\times a_2 = a_3$, $\\frac{a_1}{a_2} = a_3$
     rb = re.search(r"<rb>(.*)</rb>", position).group(1)
 
     left = ord(lt[0]) - ord('A')
-    top = int(lt[1:])
-    right = ord(lt[0]) - ord('A') + 1
-    bottom = int(rb[1:]) + 1
+    top = int(lt[1:]) - 1
+    right = ord(rb[0]) - ord('A') + 1
+    bottom = int(rb[1:])
 
     page_id = top // grid_y_num
 
