@@ -12,9 +12,14 @@ type Problem = {
 };
 
 const problems: Problem[] = [
-    { id: 1, name: "문제 1", difficulty: "Easy", chapter: "1장" },
-    { id: 2, name: "문제 2", difficulty: "Medium", chapter: "2장" },
-    { id: 3, name: "문제 3", difficulty: "Hard", chapter: "3장" },
+    { id: 1, name: "문제 1", difficulty: "Easy", chapter: "예시" },
+    { id: 2, name: "문제 2", difficulty: "Medium", chapter: "예시" },
+    { id: 3, name: "방정식 1", difficulty: "Hard", chapter: "실험 10/28" },
+    { id: 4, name: "방정식 2", difficulty: "Hard", chapter: "실험 10/28" },
+    { id: 5, name: "방정식 3", difficulty: "Hard", chapter: "실험 10/28" },
+    { id: 6, name: "방정식 4-1", difficulty: "Hard", chapter: "실험 10/28" },
+    { id: 7, name: "방정식 4-2", difficulty: "Hard", chapter: "실험 10/28" },
+    { id: 8, name: "방정식 5", difficulty: "Hard", chapter: "실험 10/28" },
 ];
 
 const ProblemListView: React.FC = () => {
