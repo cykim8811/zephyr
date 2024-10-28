@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Solution, Problem
 from .serializers import SolutionSerializer
+from django.contrib.auth import authenticate
 
 import json
 
@@ -89,3 +90,4 @@ def get_user_solution(request):
         serializer = SolutionSerializer(solution)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
         
+from django.contrib.auth.models import User

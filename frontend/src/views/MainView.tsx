@@ -1,131 +1,69 @@
-import React, { useEffect, useState } from 'react';
-import Markdown from 'react-markdown'
-import { motion } from 'framer-motion';
+import { Input } from "@/components/ui/input";
+import SnuIcon from "@/assets/snu.png";
+import { Button } from "@/components/ui/button";
+import { ArrowRightIcon } from "lucide-react";
 
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-
-import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
-
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { getCsrfToken } from "@/utils/csrf";
+import { Base64 } from "js-base64";
 
 const MainView: React.FC = () => {
-    const [tutortext, setTutortext] = useState("tuter.");
-    const [nextPageTransition, setNextPageTransition] = useState(false);
-
     const navigate = useNavigate();
-
-    useEffect(() => {
-        setTimeout(() => {setTutortext("tuter");}, 5000);
-        setTimeout(() => {setTutortext("tute");}, 5100);
-        setTimeout(() => {setTutortext("tut");}, 5200);
-        setTimeout(() => {setTutortext("tuto");}, 5300);
-        setTimeout(() => {setTutortext("tutor");}, 5400);
-        setTimeout(() => {setTutortext("tutor.");}, 5500);
-    }, []);
+    const [name, setName] = React.useState("");
     return (
-        <motion.div
-            className="flex justify-center items-center h-screen text-6xl md:text-8xl lg:text-9xl flex-col" style={{ fontFamily: "Noto Serif"}}
-            initial={{ opacity: 1, y: 0 }}
-            animate={{ opacity: nextPageTransition ? 0 : 1, y: nextPageTransition ? 20 : 0 }}
-            transition={{ duration: 0.5, ease: "easeIn" }}
-        >
-            <motion.span
-                className="flex flex-row items-center italic"
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-            >
-                <span style={{fontSize: "0.8em", marginBottom: "0.4rem"}}>Zephyr.</span>
-            </motion.span>
-            <motion.div 
-                className="text-lg md:text-2xl lg:text-3xl mt-20 mb-8"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-            >
-                Your personal real-time AI math <span className="text-transparent">tuter.</span>
-                <div className="absolute right-0 top-0 text-lg md:text-2xl lg:text-3xl text-black">
-                <div className="absolute">{tutortext}</div>
-                    <motion.div
-                        className="relative"
-                        initial={{ opacity: 1 }}
-                        animate={{ opacity: 0 }}
-                        transition={{ duration: 0.2, delay: 5.8 }}
-                    >
-                        <motion.div
-                            className="decoration-wavy underline decoration-red-600 overflow-hidden text-transparent h-16"
-                            initial={{ width: 0 }}
-                            animate={{ width: "100%" }}
-                            transition={{ duration: 0.5, delay: 2.3 }}
-                        >
-                            tutor.
-                        </motion.div>
-                        {
-                            window.innerWidth > 768 ?
-                            <motion.div
-                                className="absolute top-8 -left-20 md:-left-14 text-red-600 text-lg lg:text-2xl overflow-hidden fit-content"
-                                style={{ fontFamily: "Kalam" }}
-                                initial={{ maxWidth: 0 }}
-                                animate={{ maxWidth: "400%" }}
-                                transition={{ duration: 1.2, delay: 2.8 }}
-                            >
-                                <div className="whitespace-nowrap max-content block">
-                                    Check the spelling of 'tuter'.
-                                </div>
-                            </motion.div>
-                            :
-                            <span>
-                                <motion.div
-                                    className="absolute top-8 -left-20 md:-left-14 text-red-600 text-lg overflow-hidden fit-content"
-                                    style={{ fontFamily: "Kalam" }}
-                                    initial={{ maxWidth: 0 }}
-                                    animate={{ maxWidth: "400%" }}
-                                    transition={{ duration: 0.8, delay: 2.8 }}
-                                >
-                                    <div className="whitespace-nowrap max-content block">
-                                        Check the spelling
-                                    </div>
-                                </motion.div>
-                                <motion.div
-                                    className="absolute top-14 -left-2 md:-left-14 text-red-600 text-lg overflow-hidden fit-content"
-                                    style={{ fontFamily: "Kalam" }}
-                                    initial={{ maxWidth: 0 }}
-                                    animate={{ maxWidth: "400%" }}
-                                    transition={{ duration: 0.6, delay: 3.3 }}
-                                >
-                                    <div className="whitespace-nowrap max-content block">
-                                        of 'tuter'.
-                                    </div>
-                                </motion.div>
-                            </span>
-                        }
-                        <span className="text-transparent">tutor.</span>
-                    </motion.div>
+        <div className="w-screen h-screen bg-white flex flex-col justify-center items-center">
+            <div className="w-fit flex flex-col">
+                <div className="text-center text-xl flex flex-row justify-start items-center mb-8">
+                    <img src={SnuIcon} alt="SNU" className="w-9 h-9" />
+                    <div className="text-xs text-left ml-4">
+                        서울대학교 수학교육과<br />
+                        공동연구지원사업 AI 커스터마이징
+                    </div>
                 </div>
-            </motion.div>
-            <motion.div
-                className="text-xl mb-12"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.8, delay: 1, ease: "easeOut" }}
-            >
-                <Button
-                    className="mb-24"
-                    onClick={() => {
-                        setNextPageTransition(true)
-                        setTimeout(() => {
-                            // navigate("/login");
-                            window.location.href = "/accounts/google/login"
-                        }, 500);
-                    }}
-                >
-                    Get Started
-                    <ArrowRight size={16} />
-                </Button>
-            </motion.div>
-        </motion.div>
+                <div>
+                    <Input placeholder="이름" className="text-xl" value={name} onChange={(e) => setName(e.target.value)} />
+                    <Button className="w-full mt-4 text-xl"
+                        onClick={async () => {
+                            const base64name = Base64.encode(name);
+                            await axios.post(
+                                `/accounts/signup/`,
+                                {
+                                    username: name,
+                                    email: `${base64name}@cykim.kr`,
+                                    password1: "asfDASd689789dsf##@asdf",
+                                    password2: "asfDASd689789dsf##@asdf",
+                                },
+                                {
+                                    headers: {
+                                        'Content-Type': 'application/x-www-form-urlencoded',
+                                        "X-CSRFToken": getCsrfToken(),
+                                    },
+                                }
+                            );
+                            
+                            await axios.post(
+                                `/accounts/login/`,
+                                {
+                                    email: `${base64name}@cykim.kr`,
+                                    password: "asfDASd689789dsf##@asdf",
+                                },
+                                {
+                                    headers: {
+                                        'Content-Type': 'application/x-www-form-urlencoded',
+                                        "X-CSRFToken": getCsrfToken(),
+                                    },
+                                }
+                            );
+
+                            navigate("/problem");
+                        }}>
+                        학생 로그인<ArrowRightIcon size={16} className="mr-2" />
+                    </Button>
+                </div>
+            </div>
+        </div>
     );
 };
 

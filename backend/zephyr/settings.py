@@ -31,7 +31,7 @@ SECRET_KEY = 'django-insecure-i=^!5_dkat6&a^tbj5jxmw+7xkr%+-t1h%+_wf=5n7%u$tqsof
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'zephyr.cykim.kr',
+    'snume.cykim.kr',
     '192.168.75.194'
 ]
 
@@ -39,11 +39,11 @@ if DEBUG:
     ALLOWED_HOSTS.append('192.168.75.194')
 
 CORS_ALLOWED_ORIGINS = [
-    'https://zephyr.cykim.kr',
+    'https://snume.cykim.kr',
     'https://192.168.75.194'
 ]
 CSRF_TRUSTED_ORIGINS = [
-    'https://zephyr.cykim.kr',
+    'https://snume.cykim.kr',
     'https://192.168.75.194'
 ]
 
@@ -88,11 +88,10 @@ SITE_ID = 1
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_VERIFICATION = 'optional'
 LOGIN_REDIRECT_URL = '/problem'
 SOCIALACCOUNT_LOGIN_ON_GET = True
 ACCOUNT_DEFAULT_HTTP_PROTOCOL='https'
-
+ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
@@ -159,7 +158,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
