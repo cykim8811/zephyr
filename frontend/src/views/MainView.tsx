@@ -116,7 +116,8 @@ const MainView: React.FC = () => {
                     onClick={() => {
                         setNextPageTransition(true)
                         setTimeout(() => {
-                            navigate("/login");
+                            // navigate("/login");
+                            window.location.href = "/accounts/google/login"
                         }, 500);
                     }}
                 >

@@ -8,6 +8,7 @@ from problem.models import Problem
 
 from PIL import Image
 import json
+import time
 
 from typing import List
 
@@ -143,7 +144,7 @@ def request_ai(request):
             "role": "system",
             "content": """
 [단계 분석 방법]
-관찰, 사용 가능한 스킬, 일치 여부, 평가 순으로 풀이를 분석합니다.
+관찰, 사용 가능한 스킬, 일치 여부, 평가, 위치 순으로 풀이를 분석합니다.
 예시를 참고하여, 해당 단계의 풀이를 분석해주세요.
 
 # 예시 1
@@ -152,6 +153,7 @@ def request_ai(request):
 관찰: "$a_1 \\times a_2 = a_3$이다." 이라고 적혀있습니다.
 일치 여부: 두 풀이는 정확하게 일치함.
 평가: 따라서, 해당 단계에는 오류가 없습니다. [계속]
+위치: <pos>C8</pos>
 
 # 예시 2
 사용 가능한 스킬:
@@ -159,6 +161,7 @@ def request_ai(request):
 관찰: "$a_1 - a_2 = a_3$로 구할 수 있다."이라고 적혀있습니다.
 일치 여부: 두 풀이에 차이가 존재함.
 평가: 학생은 덧셈을 사용해야 하는데, 뺄셈을 사용하는 오류를 범했습니다. [오류]
+위치: <pos>D3</pos>
 
 # 예시 3
 사용 가능한 스킬:
@@ -166,6 +169,7 @@ def request_ai(request):
 관찰: "고로 일반항은 $a_n = a_1 + 4 * n - 4$"이라고 적혀있습니다.
 일치 여부: 두 풀이에 차이가 존재함.
 평가: 학생은 $(n - 1)$을 전개한 형태를 활용하였으나, 이는 스킬의 식과 본질적으로 같으므로, 해당 단계에는 오류가 없습니다. [계속]
+위치: <pos>E7</pos>
 
 # 예시 4
 사용 가능한 스킬:
@@ -173,12 +177,14 @@ def request_ai(request):
 관찰: "그러므로 초항은 $a_1 = 3 + 2 + 5 = 10$"이라고 적혀있습니다.
 일치 여부: 두 풀이의 결과는 같으나 풀이 과정이 다름.
 평가: 학생은 $r$과 $a_3$의 값을 잘못 구하였습니다. [오류]
+위치: <pos>B5</pos>
 
 # 예시 5
 사용 가능한 스킬: 아직 사용된 스킬이 없습니다.
 관찰: $a_1 = 3$이라고 적혀있습니다.
 일치 여부: -
 평가: 학생은 풀이에 스킬을 사용하지 않았습니다. [계속]
+위치: <pos>C3</pos>
 
 # 예시 6
 사용 가능한 스킬:
@@ -189,72 +195,136 @@ def request_ai(request):
 Skill E - 두 풀이는 정확하게 일치함.
 Skill F - 학생은 Skill F를 사용하지 않음. (해당 스킬을 무시합니다)
 평가: 학생은 [Skill E]를 올바르게 사용하였습니다. [계속]
+위치: <pos>D9</pos>
 """
+        },
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/jpeg;base64,{grid_res[i]}",
+                        "detail": "high",
+                    },
+                }
+                for i in range(len(res))
+            ]
         }
     ]
 
     session = OpenAISession("gpt-4o", initial_messages, verbose=True, temperature=0.1)
 
 
+    def generate():
+        yield json.dumps({
+            "page_id": 0,
+            "left": 0.1,
+            "top": 0.1,
+            "right": 0.9,
+            "bottom": 0.9,
+            "text": "*N",
+        }) + "\n"
 
-    response = session.request([
-        {
-            "type": "text",
-            "text": """
-
+        response = session.request([
+            {
+                "type": "text",
+                "text": """
 # 문제
 {problem}
-                           
+                        
 # 참고 기술
 {skills}
-                           
+                        
 주어진 Skill들을 활용하여, 이미지에 주어진 학생의 문제 풀이의 처음 단계를 분석해주세요. 마지막 줄에 태그를 추가해주세요.
 만약 오류가 있다면 [오류]라고 표시해주시고, 만약 오류가 없고 마지막 단계라면 [종료]라고 표시해주세요. 다음 단계가 존재하면 [계속] 이라고 표시해주세요.
 '스킬'은 문제의 참고 기술 중에서 사용된 것을 그대로 적어주세요.
 '일치 여부'는 학생의 풀이와 스킬의 각 부분이 정확하게 일치하는지 여부를 확인해주세요.
+'위치'는 학생의 풀이에서 오류와 겹치는 셀의 태그를 적어주세요.
 
 주의: 계산 결과가 옳더라도, 풀이 과정이 모두 맞아야 정답처리 됩니다.
-""".replace("{skills}", 
-             "\n".join([k + ": " + v for k, v in json.loads(problem.prompt).items()])
-             )\
-    .replace("{problem}", problem.text)
-        }
-    ] + [
-        {
-            "type": "image_url",
-            "image_url": {
-                "url": f"data:image/jpeg;base64,{res[i]}",
-                "detail": "high",
-            },
-        }
-        for i in range(len(res))
-    ])
-    
-    while "[오류]" not in response:
-        response = session.request([
-            {
-                "type": "text",
-                "text": "주어진 Skill들을 활용하여, 이미지에 주어진 학생의 문제 풀이의 다음 단계를 분석해주세요. 마지막 줄에 태그를 추가해주세요."
+    """.replace("{skills}", 
+                "\n".join([k + ": " + v for k, v in json.loads(problem.prompt).items()])
+                )\
+        .replace("{problem}", problem.text)
             }
-        ] + [session.messages[-2]["content"].pop()]
-        )
-        if "[종료]" in response: break
+        ] + [
+            {
+                "type": "image_url",
+                "image_url": {
+                    "url": f"data:image/jpeg;base64,{res[i]}",
+                    "detail": "high",
+                },
+            }
+            for i in range(len(res))
+        ])
+        
 
-    if "[종료]" in response:
-        def generate():
+        import re
+        position = re.search(r"<pos>(.*)</pos>", response).group(1)
+
+        px = ord(position[0]) - ord('A')
+        py = int(position[1:]) - 1
+
+        page_id = py // grid_y_num
+
+        py -= page_id * grid_y_num
+        
+        yield json.dumps({
+            "page_id": page_id,
+            "left": 0.05,
+            "top": py / grid_y_num,
+            "right": 0.95,
+            "bottom": (py + 1) / grid_y_num,
+            "text": "*G",
+        }) + "\n"
+
+        
+        while "[오류]" not in response:
+            response = session.request([
+                {
+                    "type": "text",
+                    "text": "주어진 Skill들을 활용하여, 이미지에 주어진 학생의 문제 풀이의 다음 단계를 분석해주세요. 마지막 줄에 태그를 추가해주세요."
+                }
+            ] + [session.messages[-2]["content"].pop()]
+            )
+            import re
+            position = re.search(r"<pos>(.*)</pos>", response).group(1)
+
+            px = ord(position[0]) - ord('A')
+            py = int(position[1:]) - 1
+
+            page_id = py // grid_y_num
+
+            py -= page_id * grid_y_num
+            
             yield json.dumps({
-                "page_id": 0,
-                "left": 0.1,
-                "top": 0.1,
-                "right": 0.9,
-                "bottom": 0.9,
+                "page_id": page_id,
+                "left": 0.05,
+                "top": py / grid_y_num,
+                "right": 0.95,
+                "bottom": (py + 1) / grid_y_num,
                 "text": "*G",
             }) + "\n"
-        return StreamingHttpResponse(generate(), content_type="text/event-stream")
 
-    response = session.ask("학생이 해당 오류를 고칠 수 있도록 조언해주세요. 학생이 스스로 고칠 수 있도록, 정답을 직접 제공하지 않도록 주의해주세요.")
+            if "[종료]" in response: break
 
-    result = session.ask("""
+        if "[종료]" in response:
+            yield json.dumps({
+                "page_id": 0,
+                "left": 0.05,
+                "top": 0.05,
+                "right": 0.95,
+                "bottom": 0.95,
+                "text": "*G",
+            }) + "\n"
+            time.sleep(3)
+            yield "null\n"
+            return
+
+        response = session.ask("학생이 해당 오류를 고칠 수 있도록 조언해주세요. 학생이 스스로 고칠 수 있도록, 정답을 직접 제공하지 않도록 주의해주세요.")
+
+        result = session.ask("""
 해당 조언을 규칙에 맞게 고쳐주세요.
 
 # 규칙
@@ -268,49 +338,48 @@ ex) $a_1 \\times a_2 = a_3$, $\\frac{a_1}{a_2} = a_3$
 <output>이 수식에서 $a_1$과 $a_2$의 관계가 어떻게 되나요?</output>
 """)
 
-    advice = result[result.find("<output>")+8:result.find("</output>")]
+        advice = result[result.find("<output>")+8:result.find("</output>")]
 
-    position = session.request([
-        {
-            "type": "image_url",
-            "image_url": {
-                "url": f"data:image/jpeg;base64,{grid_res[i]}",
-                "detail": "high",
-            },
-        }
-        for i in range(len(res))
-    ] + [
-        {
-            "type": "text",
-            "text": "이미지에 격자를 겹쳐 제공합니다. 해당 오류의 공식을 다시 말하고, 해당 오류의 가장 왼쪽 위의 셀과 오른쪽 아래의 셀을 XML 형태로 제시해주세요."
-            + "ex)"
-            + "공식: $a_1 \\times a_2 = a_3$"
-            + "<lt>C8</lt><rb>D12</rb>"
-        }
-    ])
+        position = session.request([
+            {
+                "type": "image_url",
+                "image_url": {
+                    "url": f"data:image/jpeg;base64,{grid_res[i]}",
+                    "detail": "high",
+                },
+            }
+            for i in range(len(res))
+        ] + [
+            {
+                "type": "text",
+                "text": "이미지에 격자를 겹쳐 제공합니다. 해당 오류의 공식을 다시 말하고, 해당 오류의 가장 왼쪽 위의 셀과 오른쪽 아래의 셀을 XML 형태로 제시해주세요."
+                + "ex)"
+                + "공식: $a_1 \\times a_2 = a_3$"
+                + "<lt>C8</lt><rb>D12</rb>"
+            }
+        ])
 
-    # parse lt and rb
-    import re
-    lt = re.search(r"<lt>(.*)</lt>", position).group(1)
-    rb = re.search(r"<rb>(.*)</rb>", position).group(1)
+        # parse lt and rb
+        import re
+        lt = re.search(r"<lt>(.*)</lt>", position).group(1)
+        rb = re.search(r"<rb>(.*)</rb>", position).group(1)
 
-    left = ord(lt[0]) - ord('A')
-    top = int(lt[1:]) - 1
-    right = ord(rb[0]) - ord('A') + 1
-    bottom = int(rb[1:])
+        left = ord(lt[0]) - ord('A')
+        top = int(lt[1:]) - 1
+        right = ord(rb[0]) - ord('A') + 1
+        bottom = int(rb[1:])
 
-    page_id = top // grid_y_num
+        page_id = top // grid_y_num
 
-    top -= page_id * grid_y_num
-    bottom -= page_id * grid_y_num
-    
+        top -= page_id * grid_y_num
+        bottom -= page_id * grid_y_num
+        
 
-    def generate():
         yield json.dumps({
             "page_id": page_id,
-            "left": left / grid_x_num,
+            "left": 0.05,
             "top": top / (grid_y_num),
-            "right": right / grid_x_num,
+            "right": 0.95,
             "bottom": bottom / (grid_y_num),
             "text": advice,
         }) + "\n"
