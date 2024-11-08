@@ -45,7 +45,7 @@ const ProblemView: React.FC = () => {
                 setProblemText(response.data.text);
             })
             .catch((e) => {
-                alert(e);
+                // alert(e);
             });
         getFromServer(id, setPageData);
     }, [id]);

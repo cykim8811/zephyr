@@ -16,7 +16,7 @@ export function saveToServer(newPageData: PageData[], id: string) {
             }
         }
     ).catch((e) => {
-        alert(e);
+        // alert(e);
     });
 }
 
@@ -35,7 +35,7 @@ export function addToServer(stroke: Stroke, page_id: number, id: string) {
             }
         }
     ).catch((e) => {
-        alert(e);
+        // alert(e);
     });
 }
 
@@ -46,6 +46,6 @@ export function getFromServer(id: string, setPageData: (pageData: PageData[]) =>
         }
         )
         .catch((e) => {
-            alert(e);
+            // alert(e);
         });
 }

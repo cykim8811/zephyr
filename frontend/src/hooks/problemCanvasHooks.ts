@@ -102,11 +102,11 @@ export function useProblemCanvasHooks(
         isPen = e.pointerType === 'pen';
         if (isPen) {
             lastPointRef.current = [{ x: e.clientX, y: e.clientY - canvasRef.current!.getBoundingClientRect().top }];
-            if (penTypeRef.current === 'eraser') {
-                eraserDisplayRef.current!.style.display = 'block';
-                eraserDisplayRef.current!.style.left = e.clientX + 'px';
-                eraserDisplayRef.current!.style.top = e.clientY - canvasRef.current!.getBoundingClientRect().top + 'px';
-            }
+            // if (penTypeRef.current === 'eraser') {
+            //     eraserDisplayRef.current!.style.display = 'block';
+            //     eraserDisplayRef.current!.style.left = e.clientX + 'px';
+            //     eraserDisplayRef.current!.style.top = e.clientY - canvasRef.current!.getBoundingClientRect().top + 'px';
+            // }
         } else {
             return;
         }
@@ -126,8 +126,36 @@ export function useProblemCanvasHooks(
             if (!ctx) return;
 
             if (penTypeRef.current === 'eraser') {
-                eraserDisplayRef.current!.style.left = e.clientX + 'px';
-                eraserDisplayRef.current!.style.top = e.clientY - canvas.getBoundingClientRect().top + 'px';
+                // eraserDisplayRef.current!.style.left = e.clientX + 'px';
+                // eraserDisplayRef.current!.style.top = e.clientY - canvas.getBoundingClientRect().top + 'px';
+
+                // Remove strokes collided with eraser
+                const currentPoint = { x: e.clientX, y: e.clientY - canvas.getBoundingClientRect().top };
+                const eraserSize = 10 * dpr;
+
+                const newStrokes = pageDataRef.current.strokes.filter(stroke => {
+                    if (stroke.type === 'pen') {
+                        for (let i = 0; i < stroke.points.length - 1; i++) {
+                            const p0 = stroke.points[i];
+                            const p1 = stroke.points[i + 1];
+                            const dx = p1.x - p0.x;
+                            const dy = p1.y - p0.y;
+                            const dist = Math.hypot(
+                                (currentPoint.x - p0.x) * dy - (currentPoint.y - p0.y) * dx,
+                                (currentPoint.x - p0.x) * dx + (currentPoint.y - p0.y) * dy
+                            ) / Math.hypot(dx, dy);
+                            if (dist < eraserSize) {
+                                return false;
+                            }
+                        }
+                    }
+                    return true;
+                });
+
+                if (newStrokes.length !== pageDataRef.current.strokes.length)
+                    setPageData({ strokes: newStrokes });
+
+                return;
             }
 
             if (!overlayCtxRef.current) return;
