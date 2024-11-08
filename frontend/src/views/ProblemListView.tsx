@@ -12,8 +12,6 @@ type Problem = {
 };
 
 const problems: Problem[] = [
-    { id: 1, name: "문제 1", difficulty: "Easy", chapter: "예시" },
-    { id: 2, name: "문제 2", difficulty: "Medium", chapter: "예시" },
     { id: 3, name: "방정식 1", difficulty: "Hard", chapter: "실험 10/28" },
     { id: 4, name: "방정식 2", difficulty: "Hard", chapter: "실험 10/28" },
     { id: 5, name: "방정식 3", difficulty: "Hard", chapter: "실험 10/28" },

@@ -142,7 +142,8 @@ export function useProblemCanvasHooks(
 
             const stroke = {
                 type: penTypeRef.current,
-                points: lastPointRef.current.map(p => ({ x: p.x, y: p.y }))
+                points: lastPointRef.current.map(p => ({ x: p.x, y: p.y })),
+                timestamp: Date.now()
             };
 
             drawStroke(overlayCtxRef.current, stroke);
@@ -168,7 +169,8 @@ export function useProblemCanvasHooks(
 
             drawStroke(ctx, {
                 type: penTypeRef.current,
-                points: lastPointRef.current.map(p => ({ x: p.x, y: p.y }))
+                points: lastPointRef.current.map(p => ({ x: p.x, y: p.y })),
+                timestamp: Date.now()
             });
 
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
@@ -185,7 +187,8 @@ export function useProblemCanvasHooks(
             } else {
                 addPageData({
                     type: penTypeRef.current,
-                    points: lastPointRef.current.map(p => ({ x: p.x, y: p.y }))
+                    points: lastPointRef.current.map(p => ({ x: p.x, y: p.y })),
+                    timestamp: Date.now()
                 });
             }
             lastPointRef.current = [];

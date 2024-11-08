@@ -16,6 +16,7 @@ import remarkMath from 'remark-math';
 
 import 'katex/dist/katex.min.css';
 import HintToggle from '@/components/HintToggle';
+import UndoButton from '@/components/UndoButton';
 
 function dataURLtoBlob(dataURL: string): Blob {
     const byteString = atob(dataURL.split(',')[1]);
@@ -28,6 +29,7 @@ function dataURLtoBlob(dataURL: string): Blob {
 
 const ProblemView: React.FC = () => {
     const { id } = useParams<{ id: string }>();
+    // const [pageData, setPageData] = useState<PageData[]>([{ strokes: [], }]);
     const [pageData, setPageData] = useState<PageData[]>([{ strokes: [], }]);
     const [problemText, setProblemText] = useState<string>('');
     const canvasRefs = useRef<HTMLCanvasElement[]>([]);
@@ -117,6 +119,34 @@ const ProblemView: React.FC = () => {
         e.preventDefault();
     }
 
+    const undo = async (e: TouchEvent) => {
+        if (id === undefined) return;
+        // Deep copy
+        const newPageData: PageData[] = JSON.parse(JSON.stringify(pageData));
+        let latestTimestamp = -1;
+        let latestIndex = -1;
+        let latestPage = -1;
+
+        newPageData.forEach((page, pageIndex) => {
+            page.strokes.forEach((stroke, strokeIndex) => {
+            if (stroke.timestamp > latestTimestamp) {
+                latestTimestamp = stroke.timestamp;
+                latestIndex = strokeIndex;
+                latestPage = pageIndex;
+            }
+            });
+        });
+
+        if (latestPage !== -1 && latestIndex !== -1) {
+            newPageData[latestPage].strokes.splice(latestIndex, 1);
+            setTimeout(() => {
+                setPageData(newPageData);
+                saveToServer(newPageData, id);
+            }, 0);
+        }
+        e.preventDefault();
+    }
+
     return (
         <div className="relative flex flex-col w-screen h-full">
             <ArrowLeft
@@ -175,6 +205,7 @@ const ProblemView: React.FC = () => {
                 <PenToggle className="absolute right-0 top-0 z-20" penType={penType} onClick={handleToggle} />
                 <AIButton className="absolute right-0 top-20 z-20" onClick={handleAIClick} />
                 <HintToggle className="absolute right-0 top-40 z-20" showHint={showHint} onClick={handleHintToggle} />
+                <UndoButton className="absolute right-0 top-60 z-20" onClick={undo} />
             </ScrollArea>
         </div>
     );

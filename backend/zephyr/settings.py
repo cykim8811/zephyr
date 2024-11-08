@@ -46,6 +46,9 @@ CSRF_TRUSTED_ORIGINS = [
     'https://snume.cykim.kr',
     'https://192.168.75.194'
 ]
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_HTTPONLY = False
+CORS_ALLOW_CREDENTIALS = True
 
 
 # Application definition

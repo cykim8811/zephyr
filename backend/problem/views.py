@@ -6,9 +6,12 @@ from .models import Problem
 from .serializers import ProblemSerializer
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 def get_problem(request):
     problem_id = request.query_params.get('id')
+
+    # print user data
+    print(request.user)
 
     if not problem_id:
         return Response({'error': 'Problem ID is required'}, status=status.HTTP_400_BAD_REQUEST)

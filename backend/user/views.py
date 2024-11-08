@@ -5,8 +5,14 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Solution, Problem
 from .serializers import SolutionSerializer
 from django.contrib.auth import authenticate
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 import json
+
+@ensure_csrf_cookie
+@api_view(['GET'])
+def user_info(request):
+    return Response('', status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -90,4 +96,20 @@ def get_user_solution(request):
         serializer = SolutionSerializer(solution)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
         
-from django.contrib.auth.models import User
+from django.contrib.auth import login
+
+@api_view(['POST'])
+def minimal_login(request):
+    email = request.data.get('email')
+    password = request.data.get('password')
+
+    user = authenticate(request, email=email, password=password)
+    
+    print(f'User: {user}')
+
+    if user is not None:
+        login(request, user)
+        return Response('', status=status.HTTP_200_OK)
+    else:
+        return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+    
