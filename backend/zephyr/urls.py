@@ -22,4 +22,5 @@ urlpatterns = [
     path('api/', include('ai.urls')),
     path('accounts/', include('user.urls')),
     path('api/', include('problem.urls')),
+    path('api/', include('dataset.urls')),
 ]

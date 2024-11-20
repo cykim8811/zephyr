@@ -5,7 +5,7 @@ import React, { useEffect, useRef } from "react";
 const dpr = window.devicePixelRatio || 1;
 
 const penWidth = 1.8;
-const dotDistance = 1;
+const dotDistance = 0.1;
 
 function drawStroke(ctx: CanvasRenderingContext2D, original_stroke: Stroke) {
     const stroke = {
@@ -133,7 +133,8 @@ export function useProblemCanvasHooks(
                 const currentPoint = { x: e.clientX, y: e.clientY - canvas.getBoundingClientRect().top };
                 const eraserSize = 10 * dpr;
 
-                const newStrokes = pageDataRef.current.strokes.filter(stroke => {
+                let isDifferent = false;
+                const newStrokes = pageDataRef.current.strokes.map(stroke => {
                     if (stroke.type === 'pen') {
                         for (let i = 0; i < stroke.points.length - 1; i++) {
                             const p0 = stroke.points[i];
@@ -144,16 +145,19 @@ export function useProblemCanvasHooks(
                                 (currentPoint.x - p0.x) * dy - (currentPoint.y - p0.y) * dx,
                                 (currentPoint.x - p0.x) * dx + (currentPoint.y - p0.y) * dy
                             ) / Math.hypot(dx, dy);
-                            if (dist < eraserSize) {
-                                return false;
+                            if (dist < eraserSize && stroke.erasedTimestamp === undefined) {
+                                isDifferent = true;
+                                return { ...stroke, erasedTimestamp: Date.now() };
                             }
                         }
                     }
-                    return true;
+                    return stroke;
                 });
 
-                if (newStrokes.length !== pageDataRef.current.strokes.length)
+                if (isDifferent) {
                     setPageData({ strokes: newStrokes });
+                    redrawCanvas();
+                }
 
                 return;
             }
@@ -237,6 +241,7 @@ export function useProblemCanvasHooks(
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         pageData.strokes.forEach(stroke => {
+            if (stroke.erasedTimestamp) return;
             drawStroke(ctx, stroke);
         });
     }

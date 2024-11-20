@@ -17,6 +17,7 @@ import remarkMath from 'remark-math';
 import 'katex/dist/katex.min.css';
 import HintToggle from '@/components/HintToggle';
 import UndoButton from '@/components/UndoButton';
+import SaveButton from '@/components/SaveButton';
 
 function dataURLtoBlob(dataURL: string): Blob {
     const byteString = atob(dataURL.split(',')[1]);
@@ -126,6 +127,7 @@ const ProblemView: React.FC = () => {
         let latestTimestamp = -1;
         let latestIndex = -1;
         let latestPage = -1;
+        let latestAction = 'pen';
 
         newPageData.forEach((page, pageIndex) => {
             page.strokes.forEach((stroke, strokeIndex) => {
@@ -133,18 +135,73 @@ const ProblemView: React.FC = () => {
                 latestTimestamp = stroke.timestamp;
                 latestIndex = strokeIndex;
                 latestPage = pageIndex;
+                latestAction = 'pen';
             }
             });
         });
 
-        if (latestPage !== -1 && latestIndex !== -1) {
+        newPageData.forEach((page, pageIndex) => {
+            page.strokes.forEach((stroke, strokeIndex) => {
+            if (stroke.erasedTimestamp !== undefined && stroke.erasedTimestamp > latestTimestamp) {
+                latestTimestamp = stroke.erasedTimestamp;
+                latestIndex = strokeIndex;
+                latestPage = pageIndex;
+                latestAction = 'eraser';
+            }
+            });
+        });
+
+        if (latestAction == 'pen' && latestPage !== -1 && latestIndex !== -1) {
             newPageData[latestPage].strokes.splice(latestIndex, 1);
             setTimeout(() => {
                 setPageData(newPageData);
                 saveToServer(newPageData, id);
             }, 0);
         }
+
+        if (latestAction == 'eraser' && latestPage !== -1 && latestIndex !== -1) {
+            newPageData[latestPage].strokes[latestIndex].erasedTimestamp = undefined;
+            setTimeout(() => {
+                setPageData(newPageData);
+                saveToServer(newPageData, id);
+            }, 0);
+        }
+        
         e.preventDefault();
+    }
+
+    const save = async (e: TouchEvent) => {
+        if (id === undefined) return;
+        const formData = new FormData();
+        formData.append('problem_id', id);
+
+        const images = canvasRefs.current.map((canvas, index) => {
+            const dataURL = canvas.toDataURL('image/png');
+            const blob = dataURLtoBlob(dataURL);
+            return new File([blob], `page_${index}.png`, { type: 'image/png' });
+        });
+        
+        images.slice(0, images.length - 1).forEach((image) => {
+            formData.append('images', image);
+        });
+
+        const csrfToken = getCsrfToken();
+        if (csrfToken === undefined) {
+            alert('CSRF token not found');
+            return;
+        }
+        const response = await fetch(window.location.origin + '/api/save/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': csrfToken,
+            }
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        e.preventDefault();
+
     }
 
     return (
@@ -206,6 +263,7 @@ const ProblemView: React.FC = () => {
                 <AIButton className="absolute right-0 top-20 z-20" onClick={handleAIClick} />
                 <HintToggle className="absolute right-0 top-40 z-20" showHint={showHint} onClick={handleHintToggle} />
                 <UndoButton className="absolute right-0 top-60 z-20" onClick={undo} />
+                <SaveButton className="absolute right-0 top-80 z-20" onClick={save} />
             </ScrollArea>
         </div>
     );
