@@ -334,11 +334,14 @@ ex) $a_1 \\times a_2 = a_3$, $\\frac{a_1}{a_2} = a_3$
 2. 제시된 조언이 정답을 직접 제공하는 경우, 정답을 제거하고 오류를 바로잡아주는 방식으로 수정한다.
 3. 2문장 이내의, 친절하게 학생을 도와주는 말투로 작성한다.
 4. 완성된 조언은 <output>...</output> 태그로 감싼다.
+5. 학생이 작성한 풀이는 <input>...</input> 태그로 감싼다.
 
 # 예시
+<input>$a_1 \\times a_2 = a_3$</input>
 <output>이 수식에서 $a_1$과 $a_2$의 관계가 어떻게 되나요?</output>
 """)
 
+        user_input = result[result.find("<input>")+7:result.find("</input>")]
         advice = result[result.find("<output>")+8:result.find("</output>")]
 
         position = session.request([
@@ -382,6 +385,7 @@ ex) $a_1 \\times a_2 = a_3$, $\\frac{a_1}{a_2} = a_3$
             "top": top / (grid_y_num),
             "right": 0.95,
             "bottom": bottom / (grid_y_num),
+            "user_input": user_input,
             "text": advice,
         }) + "\n"
 

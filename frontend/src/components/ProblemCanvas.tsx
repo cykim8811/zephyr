@@ -28,6 +28,8 @@ const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType, pageData, setPag
     const hintRef = useRef<HTMLDivElement>(null);
     useProblemCanvasHooks(canvasRef, eraserDisplayRef, penType, pageData, setPageData, addPageData, overlayCanvasRef);
 
+    const [checkWrite, setCheckWrite] = useState<boolean>(false);
+
     useEffect(() => {
         if (canvasRef.current) {
             setCanvas(canvasRef.current);
@@ -40,6 +42,7 @@ const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType, pageData, setPag
         setHintText('');
         (async () => {
             if (hint === null) return;
+            setCheckWrite(false);
             while (true) {
                 let done = false;
                 setHintText((prev) => {
@@ -128,7 +131,7 @@ const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType, pageData, setPag
                             <motion.div
                                 key={`${streamingNum}-text`}
                                 ref={hintRef}
-                                className="absolute p-8 text-black text-xl word-wrap pointer-events-none select-none break-keep border-2 border-gray-500/80 bg-white/95 rounded-xl opacity-70 shadow-xl"
+                                className="absolute p-8 text-black text-xl word-wrap select-none break-keep border-2 border-gray-500/80 bg-white/95 rounded-xl opacity-70 shadow-xl"
                                 style={{
                                     transform: hintTextAtBottom ?
                                         `translate(-50%, 120px)` :
@@ -150,14 +153,43 @@ const ProblemCanvas: React.FC<ProblemCanvasProps> = ({ penType, pageData, setPag
                                     delay: 0.7,
                                 }}
                             >
-                                <Markdown
-                                    remarkPlugins={[remarkMath]}
-                                    rehypePlugins={[rehypeKatex]}
-                                >
-                                    {hintText.replace('*P', '') + ((dollarCount % 2 == 1)?'$': '')}
-                                </Markdown>
+                                {
+                                    checkWrite ?
+                                    <Markdown
+                                        remarkPlugins={[remarkMath]}
+                                        rehypePlugins={[rehypeKatex]}
+                                    >
+                                        {hintText.replace('*P', '') + ((dollarCount % 2 == 1)?'$': '')}
+                                    </Markdown>
+                                    :
+                                    <>
+                                    <Markdown
+                                        remarkPlugins={[remarkMath]}
+                                        rehypePlugins={[rehypeKatex]}
+                                    >
+                                        {`"${hint.user_input}" 이라고 작성하신 게 맞나요?`}
+                                    </Markdown>
+                                    <div className="w-full flex flex-row justify-evenly">
+                                        <Button
+                                            onClick={() => setCheckWrite(true)}
+                                            className="mt-4 w-16"
+                                        >
+                                            네
+                                        </Button>
+                                        <Button
+                                            onClick={() => {
+                                                setCheckWrite(true);
+                                                setHintText('정확한 인식을 위해, 풀이를 정자로 작성해주세요.');
+                                            }}
+                                            className="mt-4 w-16"
+                                        >
+                                            아니요
+                                        </Button>
+                                    </div>
+                                    </>
+                                }
                             </motion.div>
-    }
+                        }
                     </span>
                 )
             }

@@ -260,10 +260,10 @@ const ProblemView: React.FC = () => {
                     />
                 ))}
                 <PenToggle className="absolute right-0 top-0 z-20" penType={penType} onClick={handleToggle} />
-                <AIButton className="absolute right-0 top-20 z-20" onClick={handleAIClick} />
-                <HintToggle className="absolute right-0 top-40 z-20" showHint={showHint} onClick={handleHintToggle} />
-                <UndoButton className="absolute right-0 top-60 z-20" onClick={undo} />
-                <SaveButton className="absolute right-0 top-80 z-20" onClick={save} />
+                <HintToggle className="absolute right-0 top-20 z-20" showHint={showHint} onClick={handleHintToggle} />
+                <UndoButton className="absolute right-0 top-40 z-20" onClick={undo} />
+                <AIButton className="absolute right-0 top-60 z-20" onClick={handleAIClick} />
+                {/* <SaveButton className="absolute right-0 top-80 z-20" onClick={save} /> */}
             </ScrollArea>
         </div>
     );

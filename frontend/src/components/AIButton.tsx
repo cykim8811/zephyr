@@ -35,7 +35,10 @@ const AIButton: React.FC<AIButtonProps> = ({ className, onClick }) => {
                 + (isProcessing ? " bg-gray-400 border-gray-400 text-gray-200" : " bg-white border-gray-100 text-gray-800")
                 + (className ? ` ${className}` : '')}
         >
-            <SparklesIcon size={26} className="m-4" />
+            {/* <SparklesIcon size={26} className="m-4" /> */}
+            <div className="w-full h-full flex flex-col justify-center text-lg text-center">
+                제출
+            </div>
         </div>
     );
 };
